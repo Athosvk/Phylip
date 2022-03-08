@@ -1,20 +1,18 @@
-cmake_minimum_required( VERSION 3.1 )
+cmake_minimum_required( VERSION 3.11 )
 
 project( Phylip )
 
-set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-set(ALLOW_DUPLICATE_CUSTOM_TARGETS TRUE)
+add_subdirectory( external/raylib )
 
-include_directories(
-    src/
-    )
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
 
 if( MSVC )
-    SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup" )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+	SET( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:mainCRTStartup" )
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 endif()
 
-set( COMMON_LIBS
+set( CUSTOM_LIBS
+	raylib
 	)
 
 set( SRC
@@ -23,17 +21,17 @@ set( SRC
 
 if (UNIX)
 	set (
-		COMMON_LIBS
+		LIBS
 		dl
 		pthread
 		)
 else()
 	set (
-		COMMON_LIBS
+		LIBS
 		)
 endif()
 
-add_executable( Phylip ${SRC})
-target_link_libraries( Phylip ${LIBS})
-target_compile_options( Phylip PRIVATE ${CXX_OPTIONS})
-set_property(TARGET Phylip PROPERTY CXX_STANDARD 17)
+add_executable( ${PROJECT_NAME} ${SRC})
+target_link_libraries( ${PROJECT_NAME} ${LIBS} ${CUSTOM_LIBS})
+target_compile_options( ${PROJECT_NAME} PRIVATE ${CXX_OPTIONS})
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
