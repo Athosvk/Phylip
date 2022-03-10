@@ -12,10 +12,9 @@ namespace phyl {
 		UnloadModelKeepMeshes(model);
 	}
 
-	MMesh::~MMesh() {
+	void MMesh::unload() {
 		UnloadMesh(mesh);
 	}
-
 	void MMesh::draw(){
 		DrawMesh(mesh, mat, transform.getTransformationMatrix());
 	}

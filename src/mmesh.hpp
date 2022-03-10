@@ -1,16 +1,22 @@
 #pragma once
 
 #include "raylib.h"
-#include "transform.hpp"
+#include "mtransform.hpp"
 #include <string>
 
 namespace phyl {
 	class MMesh{
 		public:
+
 			MMesh(const std::string &fp);
-			~MMesh();
+
+			BoundingBox getBBox() const;
+
 			void draw();
+			void unload();
+
 		private:
+			Model model;
 			Mesh mesh;
 			Material mat;
 			MTransform transform;

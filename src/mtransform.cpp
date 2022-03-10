@@ -1,10 +1,12 @@
-#include "transform.hpp"
+#include "mtransform.hpp"
 
 namespace phyl {
 	MTransform::MTransform() : 
 	updated(false) {
 		transform.translation = {0.0f, 0.0f, 0.0f};
 		transform.scale = {1.0f, 1.0f, 1.0f};
+		transform.rotation = QuaternionIdentity();
+		transformMat = MatrixIdentity();
 	}
 	
 	const Matrix& MTransform::getTransformationMatrix() {
@@ -19,7 +21,7 @@ namespace phyl {
 	}
 
 	void MTransform::rotate(const Vector3 &angle, float q){
-		#warning "MTransform::rotate is not implemented!"
+		transform.rotation = QuaternionMultiply(transform.rotation, QuaternionFromAxisAngle(angle, q));
 	}
 
 	void MTransform::scale(const Vector3 &s){
@@ -29,11 +31,12 @@ namespace phyl {
 	}
 
 	void MTransform::updateMatrix() {
-		transformMat = Matrix{1.0f};
-		transformMat = MatrixMultiply(transformMat, MatrixTranslate(transform.translation.x,transform.translation.y,transform.translation.z));
-		transformMat = MatrixMultiply(transformMat, QuaternionToMatrix(transform.rotation));
-		transformMat = MatrixMultiply(transformMat, MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z));
-
+		Matrix mScale = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
+		Matrix mRotate = QuaternionToMatrix(transform.rotation);
+		Matrix mTranslate = MatrixTranslate(transform.translation.x, transform.translation.y, transform.translation.z);
+		Matrix mTransf = MatrixMultiply(MatrixMultiply(mScale, mRotate), mTranslate);
+		//Matrix mTransf = MatrixMultiply(mScale, mTranslate);
+		transformMat = MatrixMultiply(transformMat, mTransf);
 		updated = true;
 	}
 }
