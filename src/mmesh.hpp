@@ -13,12 +13,12 @@ namespace phyl {
 			BoundingBox getBBox() const;
 
 			void draw();
+			void update(const float dt);
 			void unload();
 
 		private:
 			Model model;
-			Mesh mesh;
-			Material mat;
+			Mesh *mesh;
 			MTransform transform;
 	};
 };

@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+
 #include <iostream>
 
 
@@ -18,16 +19,19 @@ namespace phyl{
 		camera.fovy = options->getFloat("cam_fov", 90.0f);
 		camera.projection = CAMERA_PERSPECTIVE;
 		SetCameraMode(camera, CAMERA_FREE);
-		meshes.push_back(MMesh("/home/lorenzo/Code/Lorenzo/Tracey/scenes/obj/cat.obj"));
+		SetCameraPanControl(0);
 	}
 
 	void Renderer::run(){
-		SetTargetFPS(60);
+		const float fps = options->getInt("target_fps", 30);
+		SetTargetFPS(fps);
 		while(!WindowShouldClose()){
 			UpdateCamera(&camera);
+			const float dt = GetFrameTime();
+			std::cout << "Current dt: "<< dt << "\n";
+			update(dt);
 			draw();
 		}
-
 		CloseWindow();
 	}
 
@@ -42,4 +46,15 @@ namespace phyl{
 			EndMode3D();
 		EndDrawing();
 	}
+
+	void Renderer::addMesh(const std::filesystem::path &fp) {
+		meshes.push_back(MMesh(fp));
+	}
+	
+	void Renderer::update(const float dt) {
+		for(auto &m : meshes){
+			m.update(dt);
+		}
+	}
 }
+

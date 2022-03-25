@@ -7,19 +7,22 @@ namespace phyl {
 		model = LoadModel(fp.c_str());
 		assert(model.meshCount == 1);
 		// TODO: copy material components before unloading;
-		mat = LoadMaterialDefault();
-		mesh = model.meshes[0];
-		UnloadModelKeepMeshes(model);
+		mesh = &model.meshes[0];
 	}
 
 	void MMesh::unload() {
-		UnloadMesh(mesh);
+		UnloadModel(model);
+		mesh = nullptr;
 	}
 	void MMesh::draw(){
-		DrawMesh(mesh, mat, transform.getTransformationMatrix());
+		DrawMesh(*mesh, model.materials[model.meshMaterial[0]], transform.getTransformationMatrix());
 	}
 
 	BoundingBox MMesh::getBBox() const {
-		return GetMeshBoundingBox(mesh);
+		return GetMeshBoundingBox(*mesh);
+	}
+
+	void MMesh::update(const float dt) {
+		
 	}
 }

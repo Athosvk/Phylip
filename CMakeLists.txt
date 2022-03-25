@@ -15,6 +15,10 @@ set( CUSTOM_LIBS
 	raylib
 	)
 
+set ( INC
+		external/eigen/
+	)
+
 set( SRC
 	src/main.cpp
 	src/mtransform.cpp
@@ -35,6 +39,7 @@ else()
 		)
 endif()
 
+include_directories(${INC})
 add_executable( ${PROJECT_NAME} ${SRC})
 target_link_libraries( ${PROJECT_NAME} ${LIBS} ${CUSTOM_LIBS})
 target_compile_options( ${PROJECT_NAME} PRIVATE ${CXX_OPTIONS})
