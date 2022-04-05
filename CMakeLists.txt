@@ -22,7 +22,8 @@ set ( INC
 set( SRC
 	src/main.cpp
 	src/mtransform.cpp
-	src/mmesh.cpp
+	src/primitive.cpp
+	src/scene.cpp
 	src/options.cpp
 	src/renderer.cpp
 	)

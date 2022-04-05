@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mmesh.hpp"
 #include "options.hpp"
+#include "scene.hpp"
 
 #include "raylib.h"
 
@@ -15,12 +15,14 @@ namespace phyl{
 
 			void run();
 			void addMesh(const std::filesystem::path &fp);
-			void update(const float dt);
+			void setScene(std::shared_ptr<Scene> scene);
+
 		private:
 			Options *options;
 			Camera camera;
-			std::vector<MMesh> meshes;
+			std::shared_ptr<Scene> currScene;
 
 			void draw();
+			void update(const float dt);
 	};
 }

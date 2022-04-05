@@ -36,24 +36,24 @@ namespace phyl{
 	}
 
 	void Renderer::draw() {
-		BeginDrawing();
-			ClearBackground(BLUE);
-			BeginMode3D(camera);
-				for(auto &m : meshes){
-					m.draw();
-				}
+		if(currScene){
+			BeginDrawing();
+				ClearBackground(BLUE);
+				BeginMode3D(camera);
+				currScene->draw();
 				DrawGrid(20.0f, 10.0f);
-			EndMode3D();
-		EndDrawing();
+				EndMode3D();
+			EndDrawing();
+		}
 	}
 
-	void Renderer::addMesh(const std::filesystem::path &fp) {
-		meshes.push_back(MMesh(fp));
+	void Renderer::setScene(std::shared_ptr<Scene> scene){
+		currScene = scene;
 	}
-	
+
 	void Renderer::update(const float dt) {
-		for(auto &m : meshes){
-			m.update(dt);
+		if(currScene){
+			currScene->update(dt);
 		}
 	}
 }

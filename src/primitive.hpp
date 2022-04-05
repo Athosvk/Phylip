@@ -5,14 +5,13 @@
 #include <string>
 
 namespace phyl {
-	class MMesh{
+	class Primitive{
 		public:
-
-			MMesh(const std::string &fp);
+			Primitive(const std::string &fp);
 
 			BoundingBox getBBox() const;
 
-			void draw();
+			void draw() ;
 			void update(const float dt);
 			void unload();
 
