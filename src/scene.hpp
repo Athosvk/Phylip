@@ -1,19 +1,22 @@
 #pragma once 
 
-#include "primitive.hpp"
+#include "raylib.h"
+#include "sphere_primitive.hpp"
+#include "options.hpp"
 
 #include <vector>
 
 namespace phyl{
 class Scene {
 	public: 
-		Scene();
+		Scene(Options* options);
 		virtual void update(const float dt);
 		virtual void draw() ;
-		void addPrimitive(const std::string fp);
+		const Camera& getCamera() const;
 
 	private:
-		std::vector<Primitive> primitives;
+		Camera camera;
+		std::vector<SpherePrimitive> primitives;
 		//std::shared_ptr<MMesh> mesh;
 };
 };

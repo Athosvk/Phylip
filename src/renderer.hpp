@@ -1,9 +1,8 @@
 #pragma once
 
+#include "raylib.h"
 #include "options.hpp"
 #include "scene.hpp"
-
-#include "raylib.h"
 
 #include <vector>
 #include <filesystem>
@@ -19,7 +18,6 @@ namespace phyl{
 
 		private:
 			Options *options;
-			Camera camera;
 			std::shared_ptr<Scene> currScene;
 
 			void draw();

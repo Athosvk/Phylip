@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Eigen/Dense"
+
 namespace phyl{
 	class ClothMesh {
 		public:
@@ -14,5 +16,9 @@ namespace phyl{
 			void genMesh();
 
 			int width, height;
+			int vertsNumber;
+			
+			Eigen::VectorXd currVelocities;
+			Eigen::VectorXd currPositions;
 	};
 };

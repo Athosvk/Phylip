@@ -5,9 +5,9 @@
 #include <string>
 
 namespace phyl {
-	class Primitive{
+	class SpherePrimitive{
 		public:
-			Primitive(const std::string &fp);
+			SpherePrimitive(int radius = 1);
 
 			BoundingBox getBBox() const;
 
@@ -16,8 +16,11 @@ namespace phyl {
 			void unload();
 
 		private:
+			Mesh generate();
+
 			Model model;
 			Mesh *mesh;
 			MTransform transform;
+			int radius;
 	};
 };
