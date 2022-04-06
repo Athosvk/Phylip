@@ -1,7 +1,7 @@
 #include "cloth_mesh.hpp"
 
 namespace phyl{
-	ClothMesh::ClothMesh(int w, int h) : width(w), height(h) {
+	ClothMesh::ClothMesh(int w, int h, int lod) : width(w), height(h), lod(lod) {
 		genMesh();
 	}
 	void ClothMesh::draw(){
@@ -9,5 +9,15 @@ namespace phyl{
 	}
 	void ClothMesh::update(const float dt){
 
+	}
+	void ClothMesh::genMesh(){
+		int wVerts = width / lod;
+		int hVerts = height / lod;
+		vertsNumber = wVerts * hVerts;
+		for(int i = 0; i < wVerts; ++i){
+			for(int j = 0; j < hVerts; ++j){
+				
+			}
+		}
 	}
 };

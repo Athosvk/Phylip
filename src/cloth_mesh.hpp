@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Eigen/Core"
+
 namespace phyl{
 	class ClothMesh {
 		public:
-			ClothMesh(int width, int height);
+			ClothMesh(int width, int height, int lod = 1);
 			void draw();
 			void update(const float dt);
 
@@ -13,6 +15,10 @@ namespace phyl{
 			 */
 			void genMesh();
 
-			int width, height;
+			int width, height, lod;
+			int vertsNumber;
+			
+			Eigen::VectorXd currVelocities;
+			Eigen::VectorXd currPositions;
 	};
 };
