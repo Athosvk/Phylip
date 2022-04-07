@@ -10,8 +10,10 @@ namespace phyl{
 	class ClothMesh {
 		public:
 			ClothMesh(int width, int height, double mass = 1.0, int lod = 1);
+			~ClothMesh();
 			void draw();
 			void update(const float dt);
+
 
 		private:
 			/*
@@ -24,8 +26,7 @@ namespace phyl{
 
 			double mass;
 			
-			Model model;
-			Mesh *mesh;
+			Mesh mesh;
 			Material mat;
 			MTransform transform;
 
@@ -33,11 +34,5 @@ namespace phyl{
 			Eigen::VectorXd currVelocities;
 			Eigen::SparseMatrix<double> massMatrix;
 			Eigen::SparseMatrix<double> invMassMatrix;
-			std::vector<float> vertices;
-			std::vector<float> normals;
-			std::vector<unsigned char> colors;
-			std::vector<unsigned short> indices;
-
-			const Eigen::Vector3f color = Eigen::Vector3f(1.0, 0.5, 0.1);
-	};
+		};
 };
