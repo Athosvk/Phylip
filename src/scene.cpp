@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "rlgl.h"
 
 namespace phyl {
 	Scene::Scene(Options* options) {
@@ -25,7 +26,9 @@ namespace phyl {
 	}
 
 	void Scene::draw() {
+		rlDisableBackfaceCulling();
 		cloth->draw();
+		rlEnableBackfaceCulling();
 		for(auto &p : primitives){
 			p.draw();
 		}
