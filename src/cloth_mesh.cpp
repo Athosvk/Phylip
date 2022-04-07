@@ -24,14 +24,21 @@ namespace phyl{
 		int numIdxs = nFaces * 6;
 
 		m.vertexCount = nVerts;
-		m.triangleCount = nFaces;
+		m.triangleCount = nFaces * 2;
 
 		double massPerVertex = mass/(double)nVerts;
 		double invMassPerVertex = 1.0/massPerVertex;
 
-		m.vertices = (float*) MemAlloc(nVerts * 3 *sizeof(float));
-		m.normals = (float*) MemAlloc(nVerts * 3 *sizeof(float));
-		m.colors = (unsigned char*) MemAlloc(nVerts * 3 *sizeof(unsigned char));
+		vertices.resize(nVerts * 3);
+		normals.resize(nVerts * 3);
+		colors.resize(nVerts * 4);
+		indices.resize(numIdxs * 3);
+
+		// Just make sure to do this after the resize, otherwise we break stuff
+		m.vertices = vertices.data();
+		m.normals = normals.data();
+		m.colors = colors.data();
+		m.indices = indices.data();
 		//m.texcoords = (float*) MemAlloc(nVerts * 3 *sizeof(float));
 
 		currPositions.resize(nVerts * 3, 1);
@@ -44,14 +51,14 @@ namespace phyl{
 				currPositions[3*idx+1] = h;
 				currPositions[3*idx+2] = 0;
 
-				m.vertices[3*idx+0] = w;
-				m.vertices[3*idx+1] = h;
-				m.vertices[3*idx+2] = 0;
+				vertices[3*idx+0] = w;
+				vertices[3*idx+1] = h;
+				vertices[3*idx+2] = 0;
 
-				m.colors[3*idx+0] = color[0];
-				m.colors[3*idx+1] = color[1];
-				m.colors[3*idx+2] = color[2];
-				std::cout << idx <<"\n";
+				colors[3*idx+0] = color[0];
+				colors[3*idx+1] = color[1];
+				colors[3*idx+2] = color[2];
+				colors[3*idx+3] = 1.f;
 			}
 		}
 
@@ -65,8 +72,6 @@ namespace phyl{
 		massMatrix.setFromTriplets(massTriplets.begin(), massTriplets.end());
 		invMassMatrix.resize(nVerts * 3, nVerts * 3);
 		invMassMatrix.setFromTriplets(invMassTriplets.begin(), invMassTriplets.end());
-
-		m.indices = (unsigned short*)MemAlloc(nFaces * 3 * sizeof(unsigned short));
 		
 		int offset = 0;
 		for(int i = 0; i < numIdxs; ++i){
@@ -75,19 +80,19 @@ namespace phyl{
 				offset++;
 				cornerIdx++; 
 				// First triangle
-				m.indices[i] = (unsigned int)cornerIdx;
+				indices[i] = (unsigned int)cornerIdx;
 				i++;
-				m.indices[i] = (unsigned int)cornerIdx + width;
+				indices[i] = (unsigned int)cornerIdx + width;
 				i++;
-				m.indices[i] = (unsigned int)cornerIdx + width + 1;
+				indices[i] = (unsigned int)cornerIdx + width + 1;
 				i++;
 
 				// Second triangle
-				m.indices[i] = (unsigned int)cornerIdx;
+				indices[i] = (unsigned int)cornerIdx;
 				i++;
-				m.indices[i] = (unsigned int)cornerIdx + width + 1;
+				indices[i] = (unsigned int)cornerIdx + width + 1;
 				i++;
-				m.indices[i] = (unsigned int)cornerIdx + 1;
+				indices[i] = (unsigned int)cornerIdx + 1;
 			}
 		}
 		UploadMesh(&m, false);
