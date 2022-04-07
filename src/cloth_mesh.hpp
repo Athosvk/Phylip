@@ -1,11 +1,15 @@
 #pragma once
 
+#include "mtransform.hpp"
+
+#include "raylib.h"
 #include "Eigen/Dense"
+#include "Eigen/Sparse"
 
 namespace phyl{
 	class ClothMesh {
 		public:
-			ClothMesh(int width, int height, int lod);
+			ClothMesh(int width, int height, double mass = 1.0, int lod = 1);
 			void draw();
 			void update(const float dt);
 
@@ -17,8 +21,19 @@ namespace phyl{
 
 			int width, height, lod;
 			int vertsNumber;
+
+			double mass;
 			
-			Eigen::VectorXd currVelocities;
+			Model model;
+			Mesh *mesh;
+			Material mat;
+			MTransform transform;
+
 			Eigen::VectorXd currPositions;
+			Eigen::VectorXd currVelocities;
+			Eigen::SparseMatrix<double> massMatrix;
+			Eigen::SparseMatrix<double> invMassMatrix;
+
+			const Eigen::Vector3f color = Eigen::Vector3f(1.0, 0.5, 0.1);
 	};
 };

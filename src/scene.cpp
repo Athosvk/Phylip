@@ -16,7 +16,8 @@ namespace phyl {
 		SetCameraMode(camera, CAMERA_FREE);
 		SetCameraPanControl(0);
 
-		primitives.push_back(SpherePrimitive(15));
+		//primitives.push_back(SpherePrimitive(15));
+		cloth = std::make_shared<ClothMesh>(100, 100);
 	}
 
 	const Camera& Scene::getCamera() const {
@@ -24,17 +25,18 @@ namespace phyl {
 	}
 
 	void Scene::draw() {
+		cloth->draw();
 		for(auto &p : primitives){
 			p.draw();
 		}
-		// mmesh->draw();
 	}
 
 	void Scene::update(const float dt){
+		UpdateCamera(&camera);
 		for(auto &p : primitives){
 			p.update(dt);
 		}
-		// mmesh->update(dt);
+		cloth->update(dt);
 	}
 
 };

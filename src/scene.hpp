@@ -1,10 +1,12 @@
 #pragma once 
 
 #include "raylib.h"
+#include "cloth_mesh.hpp"
 #include "sphere_primitive.hpp"
 #include "options.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace phyl{
 class Scene {
@@ -17,6 +19,7 @@ class Scene {
 	private:
 		Camera camera;
 		std::vector<SpherePrimitive> primitives;
-		//std::shared_ptr<MMesh> mesh;
+		std::shared_ptr<ClothMesh> cloth;
+		
 };
 };
