@@ -25,6 +25,7 @@ set( SRC
 	src/sphere_primitive.cpp
 	src/cloth_mesh.cpp
 	src/scene.cpp
+	src/scene.cpp
 	src/options.cpp
 	src/renderer.cpp
 	)
