@@ -14,12 +14,13 @@ namespace phyl{
 			void draw();
 			void update(const float dt);
 
-
 		private:
 			/*
 			 * Generate vertices and triangles of the mesh
 			 */
 			void genMesh();
+			void integrateVelocity(const float dt);
+			void updateMesh();
 
 			int width, height, lod;
 			int vertsNumber;

@@ -8,6 +8,12 @@ namespace phyl{
 		mat.maps[0].color.r = 225;
 		mat.maps[0].color.g = 125;
 		mat.maps[0].color.b = 50;
+		
+		// Just some test code, remove later
+		for (int i = 0; i < currVelocities.rows() / 3; i++)
+		{
+			currVelocities[i * 3 + 1] = i * i;
+		}
 	}
 
 	void ClothMesh::draw(){
@@ -15,15 +21,18 @@ namespace phyl{
 	}
 
 	void ClothMesh::update(const float dt){
-
+		updateMesh();
+		// Will probably move to some simulation class to decouple from rendering
+		integrateVelocity(dt);
 	}
+
 	ClothMesh::~ClothMesh(){
 		UnloadMesh(mesh);
 		UnloadMaterial(mat);
 	}
 
 	void ClothMesh::genMesh(){
-		mesh = GenMeshPlane(width, height, lod, lod);
+		mesh = GenMeshPlane(width, height, lod, lod, true);
 
 		int nVerts = mesh.vertexCount;
 
@@ -32,10 +41,8 @@ namespace phyl{
 
 		currPositions.resize(nVerts * 3, 1);
 		currVelocities = Eigen::VectorXd::Zero(nVerts*3, 1);
-		for(int i = 0; i < nVerts; i+=3){
-			currPositions[i+0] = mesh.vertices[i+0];
-			currPositions[i+1] = mesh.vertices[i+1];
-			currPositions[i+2] = mesh.vertices[i+2];
+		for(int i = 0; i < nVerts * 3; i++){
+			currPositions[i] = mesh.vertices[i];
 		}
 
 		std::vector<Eigen::Triplet<double>> massTriplets;
@@ -48,6 +55,20 @@ namespace phyl{
 		massMatrix.setFromTriplets(massTriplets.begin(), massTriplets.end());
 		invMassMatrix.resize(nVerts * 3, nVerts * 3);
 		invMassMatrix.setFromTriplets(invMassTriplets.begin(), invMassTriplets.end());
+	}
+
+	void ClothMesh::integrateVelocity(const float dt)
+	{
+		currPositions += dt * currVelocities;
+	}
+
+	void ClothMesh::updateMesh()
+	{
+		for(int i = 0; i < mesh.vertexCount * 3; i++){
+			mesh.vertices[i] = currPositions[i];
+		}
+		// VBO index 0 are the vertex positions, see source code for other buffers
+		UpdateMeshBuffer(mesh, 0, mesh.vertices, mesh.vertexCount * 3 * sizeof(float), 0);
 	}
 
 };
