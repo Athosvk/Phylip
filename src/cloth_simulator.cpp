@@ -12,6 +12,55 @@ namespace phyl {
 		m_externalForces.resize(componentCount);
 	}
 	
+	void ClothSimulator::integratePositions(float dt)
+	{
+		Eigen::VectorXd currentBest = m_inertiaY;
+		bool converged = false;
+		uint32_t currentIteration = 0;
+		const uint32_t MaxIterations = 10;
+
+		while (!converged && currentIteration++ < MaxIterations)
+		{
+			Eigen::VectorXd gradient = calculateGradient(currentBest, dt);
+			// This is the epsilon used by the authors of the paper.
+			// If this is smaller, it means we've already established
+			// the positions that satisfy the constraints
+			if (gradient.squaredNorm() < 1e-15)
+			{
+				converged = true;
+			}
+			else
+			{
+				Eigen::VectorXd descentDirection = -gradient;
+				double descentLength;
+				currentBest += descentDirection * descentLength;
+
+				// We hardly had to move at all to reach convergence,
+				// which means we have satisfied the constraint
+				if (descentLength <= 1e-15)
+				{
+					converged = true;
+				}
+			}	
+
+		}
+	}
+
+	Eigen::VectorXd ClothSimulator::calculateGradient(const Eigen::VectorXd& currentEvaluationPositions, float dt) const
+	{
+		Eigen::VectorXd gradient = Eigen::VectorXd::Zero(m_mesh.GetVertexCount() * 3);
+		for (const auto& constraint : m_springConstraints)
+		{
+			Eigen::VectorXd constraintGradient = constraint.EvaluateGradient(currentEvaluationPositions, m_stiffnessCoefficient);
+			// evaluate gradient
+			gradient.segment<3>(constraint.StartVertex) += constraintGradient;
+			gradient.segment<3>(constraint.EndVertex) -= constraintGradient;
+		}
+		gradient -= m_externalForces;
+
+		return m_mesh.GetVertexMasses() * (currentEvaluationPositions - m_inertiaY) + dt * dt * gradient;
+	}
+
 	std::vector<SpringConstraint> ClothSimulator::createSpringConstraints() const
 	{
 		std::vector<SpringConstraint> constraints;
@@ -20,7 +69,7 @@ namespace phyl {
 		{
 			Eigen::Vector3d edgeStart = positions.segment<3>(edge.VertexStart);
 			Eigen::Vector3d edgeEnd = positions.segment<3>(edge.VertexEnd);
-			constraints.emplace_back(SpringConstraint{ edge.VertexStart, edge.VertexEnd, m_stiffnessCoefficient, (edgeEnd - edgeStart).norm() });
+			constraints.emplace_back(SpringConstraint{ edge.VertexStart, edge.VertexEnd, (edgeEnd - edgeStart).norm() });
 		}
 
 		// Laziness
@@ -44,7 +93,7 @@ namespace phyl {
 					// it's the most descriptive I could come up with
 					uint32_t triIndexV1 = getIndex(i + 2, j);
 					Eigen::Vector3d triV1 = positions.segment<3>(triIndexV1);
-					constraints.emplace_back(SpringConstraint{ triIndexV0, triIndexV1, m_stiffnessCoefficient, (triV1 - triV0).norm() });
+					constraints.emplace_back(SpringConstraint{ triIndexV0, triIndexV1, (triV1 - triV0).norm() });
 				}
 
 				if (j + 2 < m_mesh.GetSize())
@@ -53,7 +102,7 @@ namespace phyl {
 					// it's the most descriptive I could come up with
 					uint32_t triIndexV1 = getIndex(i, j + 2);
 					Eigen::Vector3d triV1 = positions.segment<3>(triIndexV1);
-					constraints.emplace_back(SpringConstraint{ triIndexV0, triIndexV1, m_stiffnessCoefficient, (triV1 - triV0).norm() });
+					constraints.emplace_back(SpringConstraint{ triIndexV0, triIndexV1, (triV1 - triV0).norm() });
 				}
 			}
 		}
@@ -61,7 +110,40 @@ namespace phyl {
 		return constraints;
 	}
 
+	double ClothSimulator::searchLine(const Eigen::VectorXd& currentEvaluationPositions, const Eigen::VectorXd& gradientDirection, const Eigen::VectorXd& descentDirection)
+	{
+		Eigen::VectorXd currentLinePosition;
+		// This is just used by the factor to control the speed of convergence for the step size itself, 
+		//	0.1 being the default
+		const double StepsizeBetaFactor = 0.1;
+		double currentStepSize = 1.0 / StepsizeBetaFactor;
+
+		// Initial values simply to trigger the while loop
+		double lhs = 1.0;
+		double rhs = 0.0;
+		double initialObjectiveValue = 0.0;/* evaluateOb */
+
+		// If our step size is too small, we basically already found our solution. If it's
+		// non-zero, it means we have some way to go, but this might point to a local minimum.
+		// Therefore we might need multiple iterations along the way
+		while (currentStepSize > 1e-15 && lhs >= rhs)
+		{
+			currentStepSize *= StepsizeBetaFactor;
+			lhs = 0.0 /* evaluateObjectiveFunction */;
+
+			// Not exactly sure how this factor works, but I believe this is a factor to control 
+			// the accuracy, with higher alpha being a higher tolerance for errors.
+			const double StepsizeAlphaFactor = 0.25;
+			rhs = initialObjectiveValue + StepsizeAlphaFactor * currentStepSize *
+				// Implemented in the original code as g^t * -g, but this should be the same
+				gradientDirection.dot(descentDirection);
+		}
+		return currentStepSize < 1e-15 ? 0.0 : currentStepSize;
+	}
+
 	void ClothSimulator::update(const float dt) {
+		// I have no idea why they call this inertia y, it's just used as a "what if there are no constraints"
+		// integrated position
 		m_inertiaY = m_mesh.GetVertexPositions() + m_mesh.GetVertexVelocities() * dt;
 
 		Eigen::Vector3d gravity;
