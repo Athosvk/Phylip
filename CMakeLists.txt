@@ -28,6 +28,8 @@ set( SRC
 	src/scene.cpp
 	src/options.cpp
 	src/renderer.cpp
+	src/cloth_simulator.cpp
+	src/spring_constraint.cpp
 	)
 
 if (UNIX)

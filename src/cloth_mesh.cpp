@@ -8,12 +8,6 @@ namespace phyl{
 		mat.maps[0].color.r = 225;
 		mat.maps[0].color.g = 125;
 		mat.maps[0].color.b = 50;
-		
-		// Just some test code, remove later
-		for (int i = 0; i < currVelocities.rows() / 3; i++)
-		{
-			currVelocities[i * 3 + 1] = i * i;
-		}
 	}
 
 	void ClothMesh::draw(){
@@ -24,6 +18,36 @@ namespace phyl{
 		updateMesh();
 		// Will probably move to some simulation class to decouple from rendering
 		integrateVelocity(dt);
+	}
+
+	int ClothMesh::GetVertexCount() const
+	{
+		return mesh.vertexCount;
+	}
+
+	const std::vector<Edge> ClothMesh::GetEdges() const
+	{
+		return edges;
+	}
+
+	const Eigen::VectorXd& ClothMesh::GetVertexPositions() const
+	{
+		return currPositions;
+	}
+
+	const Eigen::VectorXd& ClothMesh::GetVertexVelocities() const
+	{
+		return currVelocities;
+	}
+
+	const Eigen::SparseMatrix<double>& ClothMesh::GetVertexMasses() const
+	{
+		return massMatrix;
+	}
+
+	const int ClothMesh::GetSize() const
+	{
+		return lod;
 	}
 
 	ClothMesh::~ClothMesh(){

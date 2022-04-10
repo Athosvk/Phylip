@@ -14,7 +14,6 @@ namespace phyl{
 		SetTargetFPS(fps);
 		while(!WindowShouldClose()){
 			const float dt = GetFrameTime();
-			std::cout << "Current dt: "<< dt << "\n";
 			update(dt);
 			draw();
 		}

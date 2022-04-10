@@ -18,7 +18,8 @@ namespace phyl {
 		SetCameraPanControl(0);
 
 		//primitives.push_back(SpherePrimitive(15));
-		cloth = std::make_shared<ClothMesh>(100, 100);
+		cloth = std::make_shared<ClothMesh>(10, 10);
+		simulator = std::make_unique<ClothSimulator>(*cloth);
 	}
 
 	const Camera& Scene::getCamera() const {
@@ -40,6 +41,7 @@ namespace phyl {
 			p.update(dt);
 		}
 		cloth->update(dt);
+		simulator->update(dt);
 	}
 
 };

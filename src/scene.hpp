@@ -2,6 +2,7 @@
 
 #include "raylib.h"
 #include "cloth_mesh.hpp"
+#include "cloth_simulator.hpp"
 #include "sphere_primitive.hpp"
 #include "options.hpp"
 
@@ -20,6 +21,6 @@ class Scene {
 		Camera camera;
 		std::vector<SpherePrimitive> primitives;
 		std::shared_ptr<ClothMesh> cloth;
-		
+		std::unique_ptr<ClothSimulator> simulator;
 };
 };
