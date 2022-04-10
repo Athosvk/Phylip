@@ -18,7 +18,7 @@ namespace phyl {
 		SetCameraPanControl(0);
 
 		//primitives.push_back(SpherePrimitive(15));
-		cloth = std::make_shared<ClothMesh>(100, 100);
+		cloth = std::make_shared<ClothMesh>(100, 100, /*mass*/1.0, /*subdivision*/ 1);
 	}
 
 	const Camera& Scene::getCamera() const {

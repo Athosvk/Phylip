@@ -9,7 +9,7 @@ namespace phyl {
 		transformMat = MatrixIdentity();
 	}
 	
-	const Matrix& MTransform::getTransformationMatrix() {
+	Matrix& MTransform::getTransformationMatrix() {
 		if(!updated) updateMatrix();
 		return transformMat;
 	}

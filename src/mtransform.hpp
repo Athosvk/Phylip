@@ -7,7 +7,7 @@ namespace phyl {
 	class MTransform {
 		public:
 			MTransform();
-			const Matrix& getTransformationMatrix();
+			Matrix& getTransformationMatrix();
 
 			void translate(const Vector3 &translate);
 			void rotate(const Vector3 &angle, float q);
