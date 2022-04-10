@@ -19,6 +19,17 @@ namespace phyl{
 
 			void draw();
 			void update(const float dt);
+			void transformPoints(MTransform &t);
+
+			int getVertexCount() const { return mesh.vertexCount; }
+			Eigen::SparseMatrix<double> getMassMatrix() const { return massMatrix; }
+			Eigen::Vector3d getVertex(int i) const {return currPositions.block<3,1>(3*i, 0);};
+			const Eigen::VectorXd& getPosition() { return currPositions; }
+			void setPosition(const Eigen::VectorXd& newPos) { currPositions = newPos; updateMesh(); }
+
+
+			Eigen::VectorXd currPositions;
+			Eigen::VectorXd currVelocities;
 
 		private:
 			/*
@@ -45,8 +56,6 @@ namespace phyl{
 			std::vector<Edge> edges;
 			std::vector<Constraint> constraints;
 
-			Eigen::VectorXd currPositions;
-			Eigen::VectorXd currVelocities;
 			Eigen::VectorXd gravF;
 
 			Eigen::SparseMatrix<double> massMatrix;

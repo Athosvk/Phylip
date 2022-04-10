@@ -157,6 +157,16 @@ namespace phyl{
 		return (edgeCount);
 	}
 
+	void ClothMesh::transformPoints(MTransform &t) {
+		Eigen::Matrix4d tEigen = t.getEigenTransformationMatrix();
+		Eigen::Affine3d a(tEigen);
+		for(int i = 0; i < mesh.vertexCount; ++i){
+			Eigen::Vector3d tmp = a * currPositions.block<3,1>(3*i, 0);
+			currPositions.block<3,1>(3*i, 0) = tmp;
+		}
+		updateMesh();
+	}
+
 	void ClothMesh::genConstraints(){
 		if(hasFixed){
 			// TODO: Constraint the first row first and last points to stay fixed in the starting position

@@ -17,8 +17,15 @@ namespace phyl {
 		SetCameraMode(camera, CAMERA_FREE);
 		SetCameraPanControl(0);
 
-		//primitives.push_back(SpherePrimitive(15));
-		cloth = std::make_shared<ClothMesh>(100, 100, /*mass*/1.0, /*subdivision*/ 1);
+		primitives.push_back(SpherePrimitive(15));
+
+		MTransform t;
+		t.translate(Vector3{0, 20, 0});
+		cloth = std::make_shared<ClothMesh>(100, 100, /*mass*/10.0, /*subdivision*/ 10);
+		cloth->transformPoints(t);
+
+		sim.setClothMesh(cloth);
+		sim.setPrimitiveList(&primitives);
 	}
 
 	const Camera& Scene::getCamera() const {
@@ -40,6 +47,7 @@ namespace phyl {
 			p.update(dt);
 		}
 		cloth->update(dt);
+		sim.update(dt);
 	}
 
 };

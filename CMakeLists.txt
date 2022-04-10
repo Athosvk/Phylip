@@ -28,6 +28,7 @@ set( SRC
 	src/scene.cpp
 	src/options.cpp
 	src/renderer.cpp
+	src/simulation.cpp
 	)
 
 if (UNIX)

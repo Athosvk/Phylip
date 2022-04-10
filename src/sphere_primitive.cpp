@@ -26,4 +26,18 @@ namespace phyl {
 	void SpherePrimitive::update(const float dt) {
 		
 	}
+
+	bool SpherePrimitive::intersection(const Eigen::Vector3d &p, Eigen::Vector3d contactNormal, double dist) const {
+		Vector3 pos = transform.getTranslation();
+		Eigen::Vector3d center = Eigen::Vector3d(pos.x, pos.y, pos.z);
+		Eigen::Vector3d diff = p - center;
+		dist = diff.norm() - radius;
+		if (dist < 0.001) {
+			contactNormal = diff.normalized();
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
