@@ -14,7 +14,7 @@ namespace phyl{
 	};
 	class ClothMesh {
 		public:
-			ClothMesh(int width, int height, double mass = 1.0, int lod = 1);
+			ClothMesh(int width, int height, double mass = 1.0, int lod = 10);
 			~ClothMesh();
 			void draw();
 			void update(const float dt);
@@ -22,8 +22,8 @@ namespace phyl{
 			int GetVertexCount() const;
 			const std::vector<Edge> GetEdges() const;
 			const Eigen::VectorXd& GetVertexPositions() const;
-			const Eigen::VectorXd& GetVertexVelocities() const;
 			const Eigen::SparseMatrix<double>& GetVertexMasses() const;
+			void SetVertexPositions(const Eigen::VectorXd& newPositions);
 			const int GetSize() const;
 		private:
 			/*

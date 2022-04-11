@@ -10,4 +10,9 @@ namespace phyl
 		// k * extension * direction
 		return stiffness * (x_ij.norm() - RestLength) * x_ij.normalized();
 	}
+
+	double SpringConstraint::EvaluatePotentialEnergy(const Eigen::VectorXd& evaluationPositions) const
+	{
+		return 0.0;
+	}
 }

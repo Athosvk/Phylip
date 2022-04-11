@@ -35,14 +35,14 @@ namespace phyl{
 		return currPositions;
 	}
 
-	const Eigen::VectorXd& ClothMesh::GetVertexVelocities() const
-	{
-		return currVelocities;
-	}
-
 	const Eigen::SparseMatrix<double>& ClothMesh::GetVertexMasses() const
 	{
 		return massMatrix;
+	}
+
+	void ClothMesh::SetVertexPositions(const Eigen::VectorXd& newPositions)
+	{
+		currPositions = newPositions;
 	}
 
 	const int ClothMesh::GetSize() const
@@ -83,7 +83,7 @@ namespace phyl{
 
 	void ClothMesh::integrateVelocity(const float dt)
 	{
-		currPositions += dt * currVelocities;
+		//currPositions += dt * currVelocities;
 	}
 
 	void ClothMesh::updateMesh()
