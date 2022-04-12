@@ -6,31 +6,21 @@
 #include <vector>
 
 namespace phyl {
-	SpherePrimitive::SpherePrimitive(int rad) : radius(rad){
-		model = LoadModelFromMesh(GenMeshSphere(radius, 32, 32));
-		mesh = &model.meshes[0];
-	}
+	SpherePrimitive::SpherePrimitive(Vector3 center, int rad) : radius(rad), center(center) {}
 
-	void SpherePrimitive::unload() {
-		UnloadModel(model);
-		mesh = nullptr;
-	}
+	void SpherePrimitive::unload() {}
+
 	void SpherePrimitive::draw() {
-		DrawMesh(*mesh, model.materials[model.meshMaterial[0]], transform.getTransformationMatrix());
-	}
-
-	BoundingBox SpherePrimitive::getBBox() const {
-		return GetMeshBoundingBox(*mesh);
+		DrawSphere(center, radius, WHITE);
 	}
 
 	void SpherePrimitive::update(const float dt) {
-		
+		//center = Vector3{center.x + 0.0f, center.y + 1.0f * dt, center.z + 0.0f};
 	}
 
 	bool SpherePrimitive::intersection(const Eigen::Vector3d &p, Eigen::Vector3d& contactNormal, double& dist) const {
-		Vector3 pos = transform.getTranslation();
-		Eigen::Vector3d center = Eigen::Vector3d(pos.x, pos.y, pos.z);
-		Eigen::Vector3d diff = p - center;
+		Eigen::Vector3d centerEigen = Eigen::Vector3d(center.x, center.y, center.z);
+		Eigen::Vector3d diff = p - centerEigen;
 		dist = diff.norm() - radius - 0.1;
 		if (dist < 0) {
 			contactNormal = diff.normalized();

@@ -19,14 +19,14 @@ namespace phyl {
 		SetCameraMode(camera, CAMERA_FREE);
 		SetCameraPanControl(0);
 
-		primitives.push_back(SpherePrimitive(10));
+		primitives.push_back(SpherePrimitive({0.0f,0.0f,0.0f}, 20));
 		MTransform t;
 		t.translate(Vector3{0, 30, 0});
 
 		if(options->getBool("scene_fixed", true)) {
-			cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/2.0, /*subdivision*/ 34, /*hasFixed*/ true);
+			cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/6.0, /*subdivision*/ 34, /*hasFixed*/ true);
 		} else {
-			cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/2.0, /*subdivision*/ 30, /*hasFixed*/ false);
+			cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/6.0, /*subdivision*/ 30, /*hasFixed*/ false);
 		}
 		cloth->transformPoints(t);
 

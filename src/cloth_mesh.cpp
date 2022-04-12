@@ -23,8 +23,8 @@ namespace phyl{
 			Vector3 v1Center{(float)v1.coeff(0), (float)v1.coeff(1),(float)v1.coeff(2)};
 			Eigen::Vector3d v2 = GetVertexPosition(lod);
 			Vector3 v2Center{(float)v2.coeff(0), (float)v2.coeff(1),(float)v2.coeff(2)};
-			DrawSphere(v1Center, 0.4, BLACK);
-			DrawSphere(v2Center, 0.4, BLACK);
+			DrawSphere(v1Center, 0.8, BLACK);
+			DrawSphere(v2Center, 0.8, BLACK);
 		}
 	}
 

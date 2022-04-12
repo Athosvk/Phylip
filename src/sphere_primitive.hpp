@@ -10,9 +10,7 @@
 namespace phyl {
 	class SpherePrimitive{
 		public:
-			SpherePrimitive(int radius = 1);
-
-			BoundingBox getBBox() const;
+			SpherePrimitive(Vector3 center, int radius = 1);
 
 			void draw();
 			void update(const float dt);
@@ -23,9 +21,7 @@ namespace phyl {
 		private:
 			Mesh generate();
 
-			Model model;
-			Mesh *mesh;
-			MTransform transform;
 			int radius;
+			Vector3 center;
 	};
 };
