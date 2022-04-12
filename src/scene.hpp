@@ -22,5 +22,6 @@ class Scene {
 		std::vector<SpherePrimitive> primitives;
 		std::shared_ptr<ClothMesh> cloth;
 		std::unique_ptr<ClothSimulator> simulator;
+		double m_fixedDt;
 };
 };

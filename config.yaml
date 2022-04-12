@@ -1,0 +1,33 @@
+screen_width:
+  type: "int"
+  value: 800
+screen_height:
+  type: "int"
+  value: 400
+target_fps:
+  type: "int"
+  value: 30
+
+cam_pos_x:
+  type: "float"
+  value: 0.0
+cam_pos_y:
+  type: "float"
+  value: 50.0
+cam_pos_z:
+  type: "float"
+  value: 50.0
+
+cam_dir_x:
+  type: "float"
+  value: 0.0
+cam_dir_y:
+  type: "float"
+  value: 0.0
+cam_dir_z:
+  type: "float"
+  value: 0.0
+
+cam_fov:
+  type: "float"
+  value: 90.0

@@ -11,7 +11,10 @@ namespace phyl{
 	class Options{
 		public:
 			Options();
+			Options(const std::string &fp);
 			
+			void loadOptions(const std::string &fp);
+
 			bool hasOption(const std::string &name) const;
 
 			std::string getString(const std::string &name, const std::string &def) const;

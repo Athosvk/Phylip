@@ -25,6 +25,9 @@ namespace phyl {
 		//cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/2.0, /*subdivision*/ 34, /*hasFixed*/ true);
 		cloth->transformPoints(t);
 		simulator = std::make_unique<ClothSimulator>(cloth);
+
+		float fps = options->getInt("target_fps", 30);
+		m_fixedDt = 1.0/fps;
 	}
 
 	const Camera& Scene::getCamera() const {
@@ -42,7 +45,7 @@ namespace phyl {
 
 	void Scene::update(const float dt){
 		UpdateCamera(&camera);
-		simulator->update(primitives, 0.0333);
+		simulator->update(primitives, m_fixedDt);
 		for(auto &p : primitives){
 			p.update(dt);
 		}

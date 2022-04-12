@@ -3,6 +3,7 @@ cmake_minimum_required( VERSION 3.11 )
 project( Phylip )
 
 add_subdirectory( external/raylib )
+add_subdirectory( external/yaml-cpp )
 
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
 
@@ -13,10 +14,12 @@ endif()
 
 set( CUSTOM_LIBS
 	raylib
+	yaml-cpp
 	)
 
 set ( INC
 		external/eigen/
+		external/yaml-cpp/include
 	)
 
 set( SRC

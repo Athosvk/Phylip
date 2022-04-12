@@ -10,6 +10,9 @@
 
 int main(int argv, char* args[]){
 	phyl::Options opts;
+	if(argv > 1){
+		opts.loadOptions(args[1]);
+	}
 	phyl::Renderer rend(&opts);
 	std::shared_ptr<phyl::Scene> scene = std::make_shared<phyl::Scene>(&opts);
 	rend.setScene(scene);

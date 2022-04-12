@@ -1,6 +1,31 @@
 #include "options.hpp"
+#include "yaml-cpp/yaml.h"
+
+#include <iostream>
 
 namespace phyl {
+
+	Options::Options(const std::string &fp) {
+		loadOptions(fp);
+	}
+
+	void Options::loadOptions(const std::string &fp) {
+		YAML::Node config = YAML::LoadFile(fp);
+		for (YAML::const_iterator it = config.begin(); it != config.end(); ++it){
+			std::string name = it->first.as<std::string>();
+			std::string type = it->second["type"].as<std::string>();
+			if(type == "int") {
+				this->setInt(name, it->second["value"].as<int>());
+			} else if(type == "float") {
+				this->setFloat(name, it->second["value"].as<float>());
+			} else if(type == "double") {
+				this->setDouble(name, it->second["value"].as<double>());
+			} else if(type == "string") {
+				this->setString(name, it->second["value"].as<std::string>());
+			}
+		}
+	}
+
 	Options::Options() {
 		options.clear();
 	}
