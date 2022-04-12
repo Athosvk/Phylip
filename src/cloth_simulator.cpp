@@ -171,9 +171,9 @@ namespace phyl {
 
 		/* Collisions resolution */
 		Eigen::VectorXd penetration = Eigen::VectorXd(m_mesh->GetVertexCount()*3);
-		/* Collision resolution */
 		for(const auto &p : prims) {
 			penetration.setZero();
+			bool intersect= false;
 			for(int i = 0; i < m_mesh->GetVertexCount(); ++i){
 				Eigen::Vector3d v = m_mesh->GetVertex(i);
 				Eigen::Vector3d normal;
@@ -182,7 +182,7 @@ namespace phyl {
 					penetration.block<3,1>(3*i, 0) += (distance) * normal;
 				}
 			}
-			//m_mesh->SetVertexPositions(m_mesh->GetVertexPositions() - penetration);
+			m_mesh->SetVertexPositions(m_mesh->GetVertexPositions() - penetration);
 		}
 	}
 }

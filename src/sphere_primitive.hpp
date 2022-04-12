@@ -18,7 +18,7 @@ namespace phyl {
 			void update(const float dt);
 			void unload();
 
-			bool intersection(const Eigen::Vector3d &p, Eigen::Vector3d contactNormal, double& dist) const;
+			bool intersection(const Eigen::Vector3d &p, Eigen::Vector3d& contactNormal, double& dist) const;
 
 		private:
 			Mesh generate();

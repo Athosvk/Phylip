@@ -25,7 +25,6 @@ namespace phyl{
 			uint32_t GetVertexCount() const;
 			const std::vector<Edge> GetEdges() const;
 			const Eigen::VectorXd& GetVertexPositions() const;
-			void SetVertexVelocities(const Eigen::VectorXd& newPositions);
 			const Eigen::SparseMatrix<double>& GetVertexMasses() const;
 			const uint32_t GetSize() const;
 			void SetVertexPositions(const Eigen::VectorXd& newPositions);
@@ -37,6 +36,7 @@ namespace phyl{
 			 */
 			void genMesh();
 			void updateMesh();
+			void integrateVelocity(const float dt);
 			int genEdges();
 
 			int width, height, lod;

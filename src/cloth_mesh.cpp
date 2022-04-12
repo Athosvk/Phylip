@@ -21,10 +21,9 @@ namespace phyl{
 	}
 
 	void ClothMesh::update(const float dt){
-	}
-
-	void ClothMesh::SetVertexVelocities(const Eigen::VectorXd& newVelocities) {
-		currVelocities = newVelocities;
+		//updateMesh();
+		// Will probably move to some simulation class to decouple from rendering
+		//integrateVelocity(dt);
 	}
 
 	void ClothMesh::transformPoints(MTransform &t) {
