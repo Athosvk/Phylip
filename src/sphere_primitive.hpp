@@ -2,6 +2,9 @@
 
 #include "raylib.h"
 #include "mtransform.hpp"
+
+#include "Eigen/Dense"
+
 #include <string>
 
 namespace phyl {
@@ -11,9 +14,11 @@ namespace phyl {
 
 			BoundingBox getBBox() const;
 
-			void draw() ;
+			void draw();
 			void update(const float dt);
 			void unload();
+
+			bool intersection(const Eigen::Vector3d &p, Eigen::Vector3d contactNormal, double& dist) const;
 
 		private:
 			Mesh generate();
