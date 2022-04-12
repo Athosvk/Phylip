@@ -41,7 +41,7 @@ namespace phyl {
 			p.update(dt);
 		}
 		cloth->update(dt);
-		simulator->update(dt);
+		simulator->update(1 / 30.);
 	}
 
 };
