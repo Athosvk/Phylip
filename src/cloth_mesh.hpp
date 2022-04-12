@@ -30,7 +30,6 @@ namespace phyl{
 			 * Generate vertices and triangles of the mesh
 			 */
 			void genMesh();
-			void integrateVelocity(const float dt);
 			void updateMesh();
 
 			int width, height, lod;

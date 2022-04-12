@@ -16,8 +16,6 @@ namespace phyl{
 
 	void ClothMesh::update(const float dt){
 		updateMesh();
-		// Will probably move to some simulation class to decouple from rendering
-		integrateVelocity(dt);
 	}
 
 	int ClothMesh::GetVertexCount() const
@@ -79,11 +77,6 @@ namespace phyl{
 		massMatrix.setFromTriplets(massTriplets.begin(), massTriplets.end());
 		invMassMatrix.resize(nVerts * 3, nVerts * 3);
 		invMassMatrix.setFromTriplets(invMassTriplets.begin(), invMassTriplets.end());
-	}
-
-	void ClothMesh::integrateVelocity(const float dt)
-	{
-		//currPositions += dt * currVelocities;
 	}
 
 	void ClothMesh::updateMesh()
