@@ -2,12 +2,11 @@
 #include <Eigen/Core>
 
 namespace phyl {
-	struct SpringConstraint
+	struct AttachmentConstraint
 	{
-		double stiffness;
-		unsigned int StartVertex;
-		unsigned int EndVertex;
-		double RestLength;
+		double Stiffness;
+		Eigen::Vector3d Pos;
+		unsigned int Vertex;
 
 		Eigen::Vector3d EvaluateGradient(const Eigen::VectorXd& evaluationPositions) const;
 		double EvaluatePotentialEnergy(const Eigen::VectorXd& evaluationPositions) const;

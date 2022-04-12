@@ -6,7 +6,8 @@
 namespace phyl {
 	ClothSimulator::ClothSimulator(std::shared_ptr<ClothMesh> mesh) :
 		m_mesh(mesh),
-		m_springConstraints(createSpringConstraints()) {
+		m_springConstraints(createSpringConstraints()),
+		m_attachConstraints(createAttachmentConstraints()) {
 		size_t componentCount = mesh->GetVertexCount() * 3;
 		m_inertiaY.resize(componentCount);
 		m_externalForces = Eigen::VectorXd::Zero(componentCount);
@@ -56,13 +57,35 @@ namespace phyl {
 		Eigen::VectorXd gradient = Eigen::VectorXd::Zero(m_mesh->GetVertexCount() * 3);
 		for (const auto& constraint : m_springConstraints)
 		{
-			Eigen::VectorXd constraintGradient = constraint.EvaluateGradient(currentEvaluationPositions, m_stiffnessCoefficient);
+			Eigen::VectorXd constraintGradient = constraint.EvaluateGradient(currentEvaluationPositions);
 			// evaluate gradient
 			gradient.segment<3>(constraint.StartVertex * 3) += constraintGradient;
 			gradient.segment<3>(constraint.EndVertex * 3) -= constraintGradient;
 		}
+		for (const auto& constraint : m_attachConstraints)
+		{
+			Eigen::VectorXd constraintGradient = constraint.EvaluateGradient(currentEvaluationPositions);
+			// evaluate gradient
+			gradient.segment<3>(constraint.Vertex * 3) += constraintGradient;
+		}
+
 		gradient -= m_externalForces;
 		return m_mesh->GetVertexMasses() * (currentEvaluationPositions - m_inertiaY) + dt * dt * gradient;
+	}
+
+	std::vector<AttachmentConstraint> ClothSimulator::createAttachmentConstraints() const
+	{
+		if(!m_mesh->hasFixedVertices()) return {};
+		std::vector<AttachmentConstraint> constraints;
+		constraints.push_back(AttachmentConstraint{m_attachmentStiffnessCoefficient,
+													m_mesh->GetVertexPosition(0), 
+													0});
+		unsigned int lastIdx = m_mesh->GetSize();
+		constraints.push_back(AttachmentConstraint{m_attachmentStiffnessCoefficient,
+													m_mesh->GetVertexPosition(lastIdx),
+													lastIdx
+													});
+		return constraints;
 	}
 
 	std::vector<SpringConstraint> ClothSimulator::createSpringConstraints() const
@@ -73,7 +96,7 @@ namespace phyl {
 		{
 			Eigen::Vector3d edgeStart = positions.segment<3>(edge.VertexStart * 3);
 			Eigen::Vector3d edgeEnd = positions.segment<3>(edge.VertexEnd * 3);
-			constraints.emplace_back(SpringConstraint{ edge.VertexStart, edge.VertexEnd, (edgeEnd - edgeStart).norm() });
+			constraints.emplace_back(SpringConstraint{ m_elasticStiffnessCoefficient, edge.VertexStart, edge.VertexEnd, (edgeEnd - edgeStart).norm() });
 		}
 
 		// Laziness
@@ -97,7 +120,7 @@ namespace phyl {
 					// it's the most descriptive I could come up with
 					uint32_t triIndexV1 = getIndex(i + 2, j);
 					Eigen::Vector3d triV1 = positions.segment<3>(triIndexV1 * 3);
-					constraints.emplace_back(SpringConstraint{ triIndexV0, triIndexV1, (triV1 - triV0).norm() });
+					constraints.emplace_back(SpringConstraint{m_bendingStiffnessCoefficient, triIndexV0, triIndexV1, (triV1 - triV0).norm() });
 				}
 
 				if (j + 2 < m_mesh->GetSize())
@@ -106,7 +129,7 @@ namespace phyl {
 					// it's the most descriptive I could come up with
 					uint32_t triIndexV1 = getIndex(i, j + 2);
 					Eigen::Vector3d triV1 = positions.segment<3>(triIndexV1 * 3);
-					constraints.emplace_back(SpringConstraint{ triIndexV0, triIndexV1, (triV1 - triV0).norm() });
+					constraints.emplace_back(SpringConstraint{m_bendingStiffnessCoefficient, triIndexV0, triIndexV1, (triV1 - triV0).norm() });
 				}
 			}
 		}
@@ -149,7 +172,11 @@ namespace phyl {
 		double potential = 0.0;
 		for (const SpringConstraint& constraint : m_springConstraints)
 		{
-			potential += constraint.EvaluatePotentialEnergy(currentEvaluationPositions, m_stiffnessCoefficient);
+			potential += constraint.EvaluatePotentialEnergy(currentEvaluationPositions);
+		}
+		for (const AttachmentConstraint& constraint : m_attachConstraints)
+		{
+			potential += constraint.EvaluatePotentialEnergy(currentEvaluationPositions);
 		}
 
 		potential -= currentEvaluationPositions.dot(m_externalForces);
@@ -171,7 +198,6 @@ namespace phyl {
 		Eigen::VectorXd penetration = Eigen::VectorXd(m_mesh->GetVertexCount()*3);
 		for(const auto &p : prims) {
 			penetration.setZero();
-			bool intersect= false;
 			for(int i = 0; i < m_mesh->GetVertexCount(); ++i){
 				Eigen::Vector3d v = m_mesh->GetVertexPosition(i);
 				Eigen::Vector3d normal;

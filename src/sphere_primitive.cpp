@@ -31,8 +31,8 @@ namespace phyl {
 		Vector3 pos = transform.getTranslation();
 		Eigen::Vector3d center = Eigen::Vector3d(pos.x, pos.y, pos.z);
 		Eigen::Vector3d diff = p - center;
-		dist = diff.norm() - radius;
-		if (dist < 0.001) {
+		dist = diff.norm() - radius - 0.001;
+		if (dist < 0) {
 			contactNormal = diff.normalized();
 			return true;
 		}

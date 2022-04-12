@@ -30,6 +30,7 @@ set( SRC
 	src/renderer.cpp
 	src/cloth_simulator.cpp
 	src/spring_constraint.cpp
+	src/attachment_constraint.cpp
 	)
 
 if (UNIX)

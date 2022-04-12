@@ -26,7 +26,7 @@ namespace phyl{
 				ClearBackground(BLUE);
 				BeginMode3D(currScene->getCamera());
 				currScene->draw();
-				DrawGrid(20.0f, 10.0f);
+				DrawGrid(10.0f, 10.0f);
 				EndMode3D();
 			EndDrawing();
 		}

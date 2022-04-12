@@ -30,6 +30,8 @@ namespace phyl{
 			void SetVertexPositions(const Eigen::VectorXd& newPositions);
 			Eigen::Vector3d GetVertexPosition(int i) const;
 
+			bool hasFixedVertices() const {return hasFixed;}
+
 		private:
 			/*
 			 * Generate vertices and triangles of the mesh
