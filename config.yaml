@@ -45,3 +45,7 @@ attachment_stiffness:
 dampening_coeff:
   type: "double"
   value: 0.001
+
+scene_fixed:
+  type: "bool"
+  value: true

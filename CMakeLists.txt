@@ -20,6 +20,7 @@ set( CUSTOM_LIBS
 set ( INC
 		external/eigen/
 		external/yaml-cpp/include
+		external/raygui/src/
 	)
 
 set( SRC
@@ -34,6 +35,7 @@ set( SRC
 	src/cloth_simulator.cpp
 	src/spring_constraint.cpp
 	src/attachment_constraint.cpp
+	src/gui_wrapper.cpp
 	)
 
 if (UNIX)

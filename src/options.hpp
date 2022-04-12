@@ -6,7 +6,7 @@
 
 namespace phyl{
 
-	using OptionsType = std::variant<int, float, double, std::string>;
+	using OptionsType = std::variant<int, float, double, std::string, bool>;
 
 	class Options{
 		public:
@@ -22,6 +22,9 @@ namespace phyl{
 
 			int getInt(const std::string &name, const int def) const;
 			void setInt(const std::string &name, const int def);
+
+			bool getBool(const std::string &name, const bool def) const;
+			void setBool(const std::string &name, const bool def);
 
 			float getFloat(const std::string &name, const float def) const;
 			void setFloat(const std::string &name, const float def);

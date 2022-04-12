@@ -18,6 +18,14 @@ namespace phyl{
 	void ClothMesh::draw(){
 		updateMesh();
 		DrawMesh(mesh, mat, transform.getTransformationMatrix());
+		if(hasFixed){
+			Eigen::Vector3d v1 = GetVertexPosition(0);
+			Vector3 v1Center{(float)v1.coeff(0), (float)v1.coeff(1),(float)v1.coeff(2)};
+			Eigen::Vector3d v2 = GetVertexPosition(lod);
+			Vector3 v2Center{(float)v2.coeff(0), (float)v2.coeff(1),(float)v2.coeff(2)};
+			DrawSphere(v1Center, 0.4, BLACK);
+			DrawSphere(v2Center, 0.4, BLACK);
+		}
 	}
 
 	void ClothMesh::transformPoints(MTransform &t) {

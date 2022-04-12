@@ -1,4 +1,3 @@
-#include <iostream>
 
 #include "options.hpp"
 #include "renderer.hpp"

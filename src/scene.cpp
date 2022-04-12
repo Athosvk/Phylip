@@ -1,6 +1,8 @@
 #include "scene.hpp"
 #include "rlgl.h"
 
+#include <filesystem>
+
 namespace phyl {
 	Scene::Scene(Options* options) {
 		camera.position = Vector3{options->getFloat("cam_pos_x", 00.0f),
@@ -17,13 +19,17 @@ namespace phyl {
 		SetCameraMode(camera, CAMERA_FREE);
 		SetCameraPanControl(0);
 
-		primitives.push_back(SpherePrimitive(20));
-
+		primitives.push_back(SpherePrimitive(10));
 		MTransform t;
 		t.translate(Vector3{0, 30, 0});
-		cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/2.0, /*subdivision*/ 30, /*hasFixed*/ false);
-		//cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/2.0, /*subdivision*/ 34, /*hasFixed*/ true);
+
+		if(options->getBool("scene_fixed", true)) {
+			cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/2.0, /*subdivision*/ 34, /*hasFixed*/ true);
+		} else {
+			cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/2.0, /*subdivision*/ 30, /*hasFixed*/ false);
+		}
 		cloth->transformPoints(t);
+
 		simulator = std::make_unique<ClothSimulator>(options);
 		simulator->setCloth(cloth);
 
@@ -36,6 +42,7 @@ namespace phyl {
 	}
 
 	void Scene::draw() {
+		m_guiWrapper.draw();
 		rlDisableBackfaceCulling();
 		cloth->draw();
 		rlEnableBackfaceCulling();

@@ -22,6 +22,8 @@ namespace phyl {
 				this->setDouble(name, it->second["value"].as<double>());
 			} else if(type == "string") {
 				this->setString(name, it->second["value"].as<std::string>());
+			} else if(type == "bool") {
+				this->setBool(name, it->second["value"].as<bool>());
 			}
 		}
 	}
@@ -57,6 +59,18 @@ namespace phyl {
 	}
 
 	void Options::setInt(const std::string &name, const int def) {
+		options[name] = def;
+	}
+
+	bool Options::getBool(const std::string &name, const bool def) const {
+		auto val = options.find(name);
+		if(val != options.end()){
+			return std::get<bool>(val->second);
+		} else {
+			return def;
+		}
+	}
+	void Options::setBool(const std::string &name, const bool def) {
 		options[name] = def;
 	}
 

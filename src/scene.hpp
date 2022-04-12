@@ -5,6 +5,7 @@
 #include "cloth_simulator.hpp"
 #include "sphere_primitive.hpp"
 #include "options.hpp"
+#include "gui_wrapper.hpp"
 
 #include <vector>
 #include <memory>
@@ -23,5 +24,6 @@ class Scene {
 		std::shared_ptr<ClothMesh> cloth;
 		std::unique_ptr<ClothSimulator> simulator;
 		double m_fixedDt;
+		GuiWrapper m_guiWrapper;
 };
 };
