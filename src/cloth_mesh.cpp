@@ -1,27 +1,18 @@
 #include "cloth_mesh.hpp"
 #include <iostream>
 
-#define SQRT_2 1.4142135623730951
-
 namespace phyl{
 	ClothMesh::ClothMesh(int w, int h, double mass, int lod, bool hasFixed) : width(w), height(h), lod(lod), mass(mass), hasFixed(hasFixed) {
 		genMesh();
 		genEdges();
-		genConstraints();
 		mat = LoadMaterialDefault();
 		mat.maps[0].color.r = 225;
 		mat.maps[0].color.g = 125;
 		mat.maps[0].color.b = 50;
+	}
 
-		Eigen::Vector3d gravTmp; gravTmp << 0, -9.81, 0;
-		gravF = massMatrix * gravTmp.replicate(currPositions.size() / 3, 1);
-
-		
-		// Just some test code, remove later
-		//for (int i = 0; i < currVelocities.rows() / 3; i++)
-		//{
-			//currVelocities[i * 3 + 1] = i * i;
-		//}
+	Eigen::Vector3d ClothMesh::GetVertex(int i) const {
+		return currPositions.block<3,1>(3*i, 0);
 	}
 
 	void ClothMesh::draw(){
@@ -29,15 +20,28 @@ namespace phyl{
 	}
 
 	void ClothMesh::update(const float dt){
-		updateMesh();
+		//updateMesh();
 		// Will probably move to some simulation class to decouple from rendering
-		integrateVelocity(dt);
-		integratePosition(dt);
+		//integrateVelocity(dt);
 	}
 
-	ClothMesh::~ClothMesh(){
-		UnloadMesh(mesh);
-		UnloadMaterial(mat);
+	void ClothMesh::SetVertexVelocities(const Eigen::VectorXd& newVelocities) {
+		currVelocities = newVelocities;
+	}
+
+	void ClothMesh::transformPoints(MTransform &t) {
+		Eigen::Matrix4d tEigen = t.getEigenTransformationMatrix();
+		Eigen::Affine3d a(tEigen);
+		for(int i = 0; i < mesh.vertexCount; ++i){
+			Eigen::Vector3d tmp = a * currPositions.block<3,1>(3*i, 0);
+			currPositions.block<3,1>(3*i, 0) = tmp;
+		}
+		updateMesh();
+	}
+
+	int ClothMesh::GetVertexCount() const
+	{
+		return mesh.vertexCount;
 	}
 /*
  * Lengyel, Eric. “Building an Edge List for an Arbitrary Mesh”. Terathon Software 3D Graphics Library, 2005. http://www.terathon.com/code/edges.html 
@@ -46,7 +50,6 @@ namespace phyl{
 	int ClothMesh::genEdges() {
 		long maxEdgeCount = mesh.triangleCount * 3;
 		int vertexCount = mesh.vertexCount;
-
 		unsigned short *firstEdge = new unsigned short[vertexCount + maxEdgeCount];
 		unsigned short *nextEdge = firstEdge + vertexCount;
 
@@ -69,8 +72,8 @@ namespace phyl{
 				long i2 = triangle[b];
 				if (i1 < i2) {
 					Edge edge;
-					edge.verts[0] = (unsigned short) i1;
-					edge.verts[1] = (unsigned short) i2;
+					edge.VertexStart = (unsigned short) i1;
+					edge.VertexEnd = (unsigned short) i2;
 					edge.tris[0] = (unsigned short) a;
 					edge.tris[1] = (unsigned short) a;
 					edges.push_back(edge);
@@ -116,7 +119,7 @@ namespace phyl{
 					bool isNewEdge = true; /* Non watertight mesh, we need to add edges that belong to only one triangle */
 					for (long edgeIndex = firstEdge[i2]; edgeIndex != 0xFFFF; edgeIndex = nextEdge[edgeIndex]) {
 						Edge *edge = &edges[edgeIndex];
-						if ((edge->verts[1] == i1) && (edge->tris[0] == edge->tris[1])) {
+						if ((edge->VertexEnd == i1) && (edge->tris[0] == edge->tris[1])) {
 							edge->tris[1] = (unsigned short) a;
 							isNewEdge = false;
 							break;
@@ -124,8 +127,8 @@ namespace phyl{
 					}
 					if(isNewEdge) {
 						Edge edge;
-						edge.verts[0] = i1;
-						edge.verts[1] = i2;
+						edge.VertexStart = i1;
+						edge.VertexEnd = i2;
 						edge.tris[0] = a;
 						edge.tris[1] = a;
 						edges.push_back(edge);
@@ -152,35 +155,39 @@ namespace phyl{
 			}
 			triangle+=3;
 		}
-
-		delete[] firstEdge;
-		return (edgeCount);
+		return edgeCount;
 	}
 
-	void ClothMesh::transformPoints(MTransform &t) {
-		Eigen::Matrix4d tEigen = t.getEigenTransformationMatrix();
-		Eigen::Affine3d a(tEigen);
-		for(int i = 0; i < mesh.vertexCount; ++i){
-			Eigen::Vector3d tmp = a * currPositions.block<3,1>(3*i, 0);
-			currPositions.block<3,1>(3*i, 0) = tmp;
-		}
-		updateMesh();
+	const std::vector<Edge> ClothMesh::GetEdges() const
+	{
+		return edges;
 	}
 
-	void ClothMesh::genConstraints(){
-		if(hasFixed){
-			// TODO: Constraint the first row first and last points to stay fixed in the starting position
-			//constraints.push_back(Constraint(pos of first vertex in first row, first vertex in first row, 0));
-			//constraints.push_back(Constraint(pos of last vertex in first row, last vertex in first row, 0));
-		}
-		for(const auto &e : edges){
-			double dist = Vector3Distance(
-					Vector3{mesh.vertices[e.verts[0] * 3 + 0], mesh.vertices[e.verts[0] * 3 + 1], mesh.vertices[e.verts[0] * 3 + 2]},
-					Vector3{mesh.vertices[e.verts[1] * 3 + 0], mesh.vertices[e.verts[1] * 3 + 1], mesh.vertices[e.verts[1] * 3 + 2]});
-			constraints.push_back(Constraint(e.verts[0], e.verts[1], dist));
-		}
+	const Eigen::VectorXd& ClothMesh::GetVertexPositions() const
+	{
+		return currPositions;
 	}
-	
+
+	const Eigen::SparseMatrix<double>& ClothMesh::GetVertexMasses() const
+	{
+		return massMatrix;
+	}
+
+	void ClothMesh::SetVertexPositions(const Eigen::VectorXd& newPositions)
+	{
+		currPositions = newPositions;
+	}
+
+	const int ClothMesh::GetSize() const
+	{
+		return lod;
+	}
+
+	ClothMesh::~ClothMesh(){
+		UnloadMesh(mesh);
+		UnloadMaterial(mat);
+	}
+
 	void ClothMesh::genMesh(){
 		mesh = GenMeshPlane(width, height, lod, lod, true);
 
@@ -205,20 +212,15 @@ namespace phyl{
 		massMatrix.setFromTriplets(massTriplets.begin(), massTriplets.end());
 		invMassMatrix.resize(nVerts * 3, nVerts * 3);
 		invMassMatrix.setFromTriplets(invMassTriplets.begin(), invMassTriplets.end());
-		gridSize = Vector3Distance(
-				Vector3{mesh.vertices[0], mesh.vertices[1], mesh.vertices[2]},
-				Vector3{mesh.vertices[3], mesh.vertices[4], mesh.vertices[5]}
-				);
-		std::cout << "Grid Size: " << gridSize << "\n";
+	}
+
+	const Eigen::VectorXd& ClothMesh::GetVertexVelocities() const {
+		return currVelocities;
 	}
 
 	void ClothMesh::integrateVelocity(const float dt)
 	{
-		currVelocities = currVelocities + gravF * dt;
-	}
-
-	void ClothMesh::integratePosition(const float dt){
-		currPositions += dt * currVelocities;
+		//currPositions += dt * currVelocities;
 	}
 
 	void ClothMesh::updateMesh()

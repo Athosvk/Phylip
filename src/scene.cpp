@@ -23,9 +23,7 @@ namespace phyl {
 		t.translate(Vector3{0, 20, 0});
 		cloth = std::make_shared<ClothMesh>(100, 100, /*mass*/10.0, /*subdivision*/ 10);
 		cloth->transformPoints(t);
-
-		sim.setClothMesh(cloth);
-		sim.setPrimitiveList(&primitives);
+		simulator = std::make_unique<ClothSimulator>(cloth);
 	}
 
 	const Camera& Scene::getCamera() const {
@@ -46,8 +44,7 @@ namespace phyl {
 		for(auto &p : primitives){
 			p.update(dt);
 		}
-		cloth->update(dt);
-		sim.update(dt);
+		simulator->update(primitives, dt);
 	}
 
 };
