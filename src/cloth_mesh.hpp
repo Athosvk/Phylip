@@ -28,16 +28,22 @@ namespace phyl{
 			const Eigen::SparseMatrix<double>& GetVertexMasses() const;
 			const uint32_t GetSize() const;
 			void SetVertexPositions(const Eigen::VectorXd& newPositions);
-			Eigen::Vector3d GetVertex(int i) const;
+			Eigen::Vector3d GetVertexPosition(int i) const;
 
 		private:
 			/*
 			 * Generate vertices and triangles of the mesh
 			 */
 			void genMesh();
-			void updateMesh();
-			void integrateVelocity(const float dt);
+			/*
+			 * Generate a list of edges from the plane mesh.
+			 * @return the number of edges;
+			 */
 			int genEdges();
+			/*
+			 * Update the VBOs of the mesh
+			 */
+			void updateMesh();
 
 			int width, height, lod;
 			int vertsNumber;
@@ -51,7 +57,6 @@ namespace phyl{
 			std::vector<Edge> edges;
 
 			Eigen::VectorXd currPositions;
-			Eigen::VectorXd currVelocities;
 			Eigen::SparseMatrix<double> massMatrix;
 			Eigen::SparseMatrix<double> invMassMatrix;
 		};

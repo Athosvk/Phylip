@@ -2,7 +2,6 @@
 #include "cloth_mesh.hpp"
 
 #include <cstdint>
-#include <iostream>
 
 namespace phyl {
 	ClothSimulator::ClothSimulator(std::shared_ptr<ClothMesh> mesh) :
@@ -45,9 +44,9 @@ namespace phyl {
 				{
 					converged = true;
 				}
-			}	
+			}
 		}
-		
+
 		m_velocities = (currentBest - m_mesh->GetVertexPositions()) / dt;
 		m_mesh->SetVertexPositions(currentBest);
 	}
@@ -111,7 +110,6 @@ namespace phyl {
 				}
 			}
 		}
-		//return {};
 		return constraints;
 	}
 
@@ -168,14 +166,14 @@ namespace phyl {
 
 		m_externalForces = m_mesh->GetVertexMasses() * m_gravity;
 		integratePositions(dt);
-
+		
 		/* Collisions resolution */
 		Eigen::VectorXd penetration = Eigen::VectorXd(m_mesh->GetVertexCount()*3);
 		for(const auto &p : prims) {
 			penetration.setZero();
 			bool intersect= false;
 			for(int i = 0; i < m_mesh->GetVertexCount(); ++i){
-				Eigen::Vector3d v = m_mesh->GetVertex(i);
+				Eigen::Vector3d v = m_mesh->GetVertexPosition(i);
 				Eigen::Vector3d normal;
 				double distance;
 				if(p.intersection(v, normal, distance)){
@@ -183,6 +181,47 @@ namespace phyl {
 				}
 			}
 			m_mesh->SetVertexPositions(m_mesh->GetVertexPositions() - penetration);
+		}
+	
+		/* Damp Velocities: http://physbam.stanford.edu/~fedkiw/papers/stanford2012-03.pdf */
+		Eigen::Vector3d posCM = Eigen::Vector3d::Zero();
+		Eigen::Vector3d velCM = Eigen::Vector3d::Zero();
+		auto vertexMasses = m_mesh->GetVertexMasses();
+		double den = 0.0;
+		for(int i = 0; i < m_mesh->GetVertexCount(); ++i) {
+			double mass = vertexMasses.coeff(i*3, i*3);
+
+			posCM += mass * m_mesh->GetVertexPosition(i);
+			velCM += mass * m_velocities.block<3,1>(i*3, 0);
+			den += mass;
+		}
+
+		posCM = posCM / den; /* Center of mass */
+		velCM = velCM / den; /* Velocity of the CoM */
+
+		Eigen::Vector3d L = Eigen::Vector3d::Zero(); /* Angular momentum */
+		Eigen::Matrix3d I = Eigen::Matrix3d::Zero(); /* Inertia Tensor */
+		for(int i = 0; i < m_mesh->GetVertexCount(); ++i) {
+			Eigen::Vector3d arm = m_mesh->GetVertexPosition(i) - posCM;
+			double mass = vertexMasses.coeff(i*3, i*3);
+			L = L + arm.cross(mass * m_velocities.block<3,1>(i*3, 0));
+			//rTilde is the 3 by 3 matrix with the property rTilde * v = ri × v
+			Eigen::Matrix3d rTilde = Eigen::Matrix3d::Zero();
+			rTilde.coeffRef(0,1) = arm.z();
+			rTilde.coeffRef(0,2) = -arm.y();
+			rTilde.coeffRef(1,0) = -arm.z();
+			rTilde.coeffRef(1,2) = arm.x();
+			rTilde.coeffRef(2,0) = arm.y();
+			rTilde.coeffRef(2,1) = -arm.x();
+			I = I + (rTilde * rTilde.transpose() * mass);
+		}
+		Eigen::Vector3d angularVel = I.inverse() * L;
+
+		for(int i = 0; i < m_mesh->GetVertexCount(); ++i) {
+			Eigen::Vector3d qi = m_mesh->GetVertexPosition(i);
+			Eigen::Vector3d arm = qi - posCM;
+			Eigen::Vector3d deltaV = velCM + angularVel.cross(arm) - m_velocities.block<3,1>(i*3, 0);
+			m_velocities.block<3,1>(i*3, 0) = m_velocities.block<3,1>(i*3, 0) + m_dampeningCoefficient * deltaV;
 		}
 	}
 }

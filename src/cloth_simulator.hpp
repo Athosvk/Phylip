@@ -26,6 +26,8 @@ private:
 	std::shared_ptr<ClothMesh> m_mesh;
 	// A default value used in the paper's solution
 	double m_stiffnessCoefficient = 80.;
+	double m_dampeningCoefficient = 0.001;
+
 	Eigen::VectorXd m_gravity;
 	Eigen::SparseMatrix<double> m_mass;
 	Eigen::VectorXd m_inertiaY;

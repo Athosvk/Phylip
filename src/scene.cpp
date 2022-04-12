@@ -21,7 +21,7 @@ namespace phyl {
 
 		MTransform t;
 		t.translate(Vector3{0, 20, 0});
-		cloth = std::make_shared<ClothMesh>(100, 100, /*mass*/10.0, /*subdivision*/ 10);
+		cloth = std::make_shared<ClothMesh>(100, 100, /*mass*/10.0, /*subdivision*/ 21);
 		cloth->transformPoints(t);
 		simulator = std::make_unique<ClothSimulator>(cloth);
 	}

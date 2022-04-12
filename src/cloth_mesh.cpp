@@ -11,19 +11,13 @@ namespace phyl{
 		mat.maps[0].color.b = 50;
 	}
 
-	Eigen::Vector3d ClothMesh::GetVertex(int i) const {
+	Eigen::Vector3d ClothMesh::GetVertexPosition(int i) const {
 		return currPositions.block<3,1>(3*i, 0);
 	}
 
 	void ClothMesh::draw(){
 		updateMesh();
 		DrawMesh(mesh, mat, transform.getTransformationMatrix());
-	}
-
-	void ClothMesh::update(const float dt){
-		//updateMesh();
-		// Will probably move to some simulation class to decouple from rendering
-		//integrateVelocity(dt);
 	}
 
 	void ClothMesh::transformPoints(MTransform &t) {
@@ -193,7 +187,6 @@ namespace phyl{
 		double invMassPerVertex = 1.0/massPerVertex;
 
 		currPositions.resize(nVerts * 3, 1);
-		currVelocities = Eigen::VectorXd::Zero(nVerts*3, 1);
 		for(int i = 0; i < nVerts * 3; i++){
 			currPositions[i] = mesh.vertices[i];
 		}
