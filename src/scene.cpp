@@ -24,7 +24,8 @@ namespace phyl {
 		cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/2.0, /*subdivision*/ 30, /*hasFixed*/ false);
 		//cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/2.0, /*subdivision*/ 34, /*hasFixed*/ true);
 		cloth->transformPoints(t);
-		simulator = std::make_unique<ClothSimulator>(cloth);
+		simulator = std::make_unique<ClothSimulator>(options);
+		simulator->setCloth(cloth);
 
 		float fps = options->getInt("target_fps", 30);
 		m_fixedDt = 1.0/fps;

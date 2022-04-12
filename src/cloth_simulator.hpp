@@ -3,6 +3,7 @@
 #include "spring_constraint.hpp"
 #include "attachment_constraint.hpp"
 #include "sphere_primitive.hpp"
+#include "options.hpp"
 
 #include <vector>
 #include <memory>
@@ -14,9 +15,10 @@ class ClothMesh;
 class ClothSimulator
 {
 public:
-	ClothSimulator(std::shared_ptr<ClothMesh> mesh);
+	ClothSimulator(Options* opts);
 
 	void update(const std::vector<SpherePrimitive> &prims, const float dt);
+	void setCloth(std::shared_ptr<ClothMesh> mesh);
 private:
 	void integratePositions(float dt);
 	Eigen::VectorXd calculateGradient(const Eigen::VectorXd& currentEvaluationPositions, float dt) const;
@@ -31,6 +33,7 @@ private:
 	double m_bendingStiffnessCoefficient 		= 20.;
 	double m_attachmentStiffnessCoefficient 	= 120.;
 	double m_dampeningCoefficient 				= 0.001;
+	double m_gravityCoeff						= 9.8;
 
 	Eigen::VectorXd m_gravity;
 	Eigen::SparseMatrix<double> m_mass;

@@ -4,15 +4,23 @@
 #include <cstdint>
 
 namespace phyl {
-	ClothSimulator::ClothSimulator(std::shared_ptr<ClothMesh> mesh) :
-		m_mesh(mesh),
-		m_springConstraints(createSpringConstraints()),
-		m_attachConstraints(createAttachmentConstraints()) {
+	ClothSimulator::ClothSimulator(Options *opts) {
+		m_elasticStiffnessCoefficient = opts->getDouble("elastic_stiffness", 80.0);
+		m_bendingStiffnessCoefficient = opts->getDouble("bending_stiffness", 20.0);
+		m_attachmentStiffnessCoefficient = opts->getDouble("attachment_stiffness", 120.0);
+		m_dampeningCoefficient = opts->getDouble("dampening_coeff", 0.001);
+		m_gravityCoeff = opts->getDouble("gravity_coeff", 9.8);
+	}
+
+	void ClothSimulator::setCloth(std::shared_ptr<ClothMesh> mesh){
+		m_mesh = mesh;
+		m_springConstraints = createSpringConstraints();
+		m_attachConstraints = createAttachmentConstraints();
 		size_t componentCount = mesh->GetVertexCount() * 3;
 		m_inertiaY.resize(componentCount);
 		m_externalForces = Eigen::VectorXd::Zero(componentCount);
 		m_velocities = Eigen::VectorXd::Zero(componentCount);
-		Eigen::Vector3d gravity = Eigen::Vector3d(0,-9.81,0);
+		Eigen::Vector3d gravity = Eigen::Vector3d(0,-m_gravityCoeff,0);
 		m_gravity = gravity.replicate(m_mesh->GetVertexCount(), 1);
 	}
 	

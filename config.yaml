@@ -31,3 +31,17 @@ cam_dir_z:
 cam_fov:
   type: "float"
   value: 90.0
+
+elastic_stiffness:
+  type: "double"
+  value: 80
+bending_stiffness:
+  type: "double"
+  value: 20
+attachment_stiffness:
+  type: "double"
+  value: 120
+
+dampening_coeff:
+  type: "double"
+  value: 0.001
