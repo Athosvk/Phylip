@@ -59,8 +59,8 @@ namespace phyl {
 		{
 			Eigen::VectorXd constraintGradient = constraint.EvaluateGradient(currentEvaluationPositions, m_stiffnessCoefficient);
 			// evaluate gradient
-			gradient.segment<3>(constraint.StartVertex) += constraintGradient;
-			gradient.segment<3>(constraint.EndVertex) -= constraintGradient;
+			gradient.segment<3>(constraint.StartVertex * 3) += constraintGradient;
+			gradient.segment<3>(constraint.EndVertex * 3) -= constraintGradient;
 		}
 		gradient -= m_externalForces;
 		return m_mesh->GetVertexMasses() * (currentEvaluationPositions - m_inertiaY) + dt * dt * gradient;
@@ -72,8 +72,8 @@ namespace phyl {
 		const Eigen::VectorXd positions = m_mesh->GetVertexPositions();
 		for (const auto& edge : m_mesh->GetEdges())
 		{
-			Eigen::Vector3d edgeStart = positions.segment<3>(edge.VertexStart);
-			Eigen::Vector3d edgeEnd = positions.segment<3>(edge.VertexEnd);
+			Eigen::Vector3d edgeStart = positions.segment<3>(edge.VertexStart * 3);
+			Eigen::Vector3d edgeEnd = positions.segment<3>(edge.VertexEnd * 3);
 			constraints.emplace_back(SpringConstraint{ edge.VertexStart, edge.VertexEnd, (edgeEnd - edgeStart).norm() });
 		}
 
@@ -90,14 +90,14 @@ namespace phyl {
 			for (uint32_t j = 0; j < m_mesh->GetSize(); j++)
 			{
 				uint32_t triIndexV0 = getIndex(i, j);
-				Eigen::Vector3d triV0 = positions.segment<3>(triIndexV0);
+				Eigen::Vector3d triV0 = positions.segment<3>(triIndexV0 * 3);
 
 				if (i + 2 < m_mesh->GetSize())
 				{
 					// The name is slightly misleading since these are not to the "triangles itself", but 
 					// it's the most descriptive I could come up with
 					uint32_t triIndexV1 = getIndex(i + 2, j);
-					Eigen::Vector3d triV1 = positions.segment<3>(triIndexV1);
+					Eigen::Vector3d triV1 = positions.segment<3>(triIndexV1 * 3);
 					constraints.emplace_back(SpringConstraint{ triIndexV0, triIndexV1, (triV1 - triV0).norm() });
 				}
 
@@ -106,12 +106,12 @@ namespace phyl {
 					// The name is slightly misleading since these are not to the "triangles itself", but 
 					// it's the most descriptive I could come up with
 					uint32_t triIndexV1 = getIndex(i, j + 2);
-					Eigen::Vector3d triV1 = positions.segment<3>(triIndexV1);
+					Eigen::Vector3d triV1 = positions.segment<3>(triIndexV1 * 3);
 					constraints.emplace_back(SpringConstraint{ triIndexV0, triIndexV1, (triV1 - triV0).norm() });
 				}
 			}
 		}
-		return {};
+		//return {};
 		return constraints;
 	}
 
