@@ -2,6 +2,7 @@
 #include "cloth_mesh.hpp"
 
 #include <cstdint>
+#include <iostream>
 
 namespace phyl {
 	ClothSimulator::ClothSimulator(ClothMesh& mesh) :
@@ -9,7 +10,8 @@ namespace phyl {
 		m_springConstraints(createSpringConstraints()) {
 		size_t componentCount = mesh.GetVertexCount() * 3;
 		m_inertiaY.resize(componentCount);
-		m_externalForces.resize(componentCount);
+		m_externalForces = Eigen::VectorXd::Zero(componentCount);
+		m_velocities = Eigen::VectorXd::Zero(componentCount);
 	}
 	
 	void ClothSimulator::integratePositions(float dt)
@@ -32,7 +34,7 @@ namespace phyl {
 			else
 			{
 				Eigen::VectorXd descentDirection = -gradient;
-				double descentLength;
+				double descentLength = searchLine(dt, currentBest, gradient, descentDirection);
 				currentBest += descentDirection * descentLength;
 
 				// We hardly had to move at all to reach convergence,
@@ -42,8 +44,10 @@ namespace phyl {
 					converged = true;
 				}
 			}	
-
 		}
+		
+		m_velocities = (currentBest - m_mesh.GetVertexPositions()) / dt;
+		m_mesh.SetVertexPositions(currentBest);
 	}
 
 	Eigen::VectorXd ClothSimulator::calculateGradient(const Eigen::VectorXd& currentEvaluationPositions, float dt) const
@@ -57,7 +61,6 @@ namespace phyl {
 			gradient.segment<3>(constraint.EndVertex) -= constraintGradient;
 		}
 		gradient -= m_externalForces;
-
 		return m_mesh.GetVertexMasses() * (currentEvaluationPositions - m_inertiaY) + dt * dt * gradient;
 	}
 
@@ -106,11 +109,10 @@ namespace phyl {
 				}
 			}
 		}
-
 		return constraints;
 	}
 
-	double ClothSimulator::searchLine(const Eigen::VectorXd& currentEvaluationPositions, const Eigen::VectorXd& gradientDirection, const Eigen::VectorXd& descentDirection)
+	double ClothSimulator::searchLine(float dt, const Eigen::VectorXd& currentEvaluationPositions, const Eigen::VectorXd& gradientDirection, const Eigen::VectorXd& descentDirection)
 	{
 		Eigen::VectorXd currentLinePosition;
 		// This is just used by the factor to control the speed of convergence for the step size itself, 
@@ -121,7 +123,7 @@ namespace phyl {
 		// Initial values simply to trigger the while loop
 		double lhs = 1.0;
 		double rhs = 0.0;
-		double initialObjectiveValue = 0.0;/* evaluateOb */
+		double initialObjectiveValue = evaluateObjectiveFunction(dt, currentEvaluationPositions);
 
 		// If our step size is too small, we basically already found our solution. If it's
 		// non-zero, it means we have some way to go, but this might point to a local minimum.
@@ -129,7 +131,7 @@ namespace phyl {
 		while (currentStepSize > 1e-15 && lhs >= rhs)
 		{
 			currentStepSize *= StepsizeBetaFactor;
-			lhs = 0.0 /* evaluateObjectiveFunction */;
+			lhs = evaluateObjectiveFunction(dt, currentEvaluationPositions + currentStepSize * descentDirection);
 
 			// Not exactly sure how this factor works, but I believe this is a factor to control 
 			// the accuracy, with higher alpha being a higher tolerance for errors.
@@ -141,14 +143,30 @@ namespace phyl {
 		return currentStepSize < 1e-15 ? 0.0 : currentStepSize;
 	}
 
+	double ClothSimulator::evaluateObjectiveFunction(float dt, const Eigen::VectorXd& currentEvaluationPositions) const
+	{
+		double potential = 0.0;
+		for (const SpringConstraint& constraint : m_springConstraints)
+		{
+			potential += constraint.EvaluatePotentialEnergy(currentEvaluationPositions, m_stiffnessCoefficient);
+		}
+
+		potential -= currentEvaluationPositions.dot(m_externalForces);
+
+		Eigen::VectorXd y = currentEvaluationPositions - m_inertiaY;
+		double inertiaTerm = 0.5 * y.transpose() * m_mesh.GetVertexMasses() * y;
+		return inertiaTerm + potential * dt;
+	}
+
 	void ClothSimulator::update(const float dt) {
 		// I have no idea why they call this inertia y, it's just used as a "what if there are no constraints"
 		// integrated position
-		m_inertiaY = m_mesh.GetVertexPositions() + m_mesh.GetVertexVelocities() * dt;
+		m_inertiaY = m_mesh.GetVertexPositions() + m_velocities * dt;
 
 		Eigen::Vector3d gravity;
-		gravity << 0, -9.81, 0;
+		gravity << 0, -0.81, 0;
 		Eigen::VectorXd gravityC = gravity.replicate(m_mesh.GetVertexCount(), 1);
-		m_externalForces += m_mesh.GetVertexMasses() * gravityC;
+		m_externalForces = m_mesh.GetVertexMasses() * gravityC;
+		integratePositions(dt);
 	}
 }

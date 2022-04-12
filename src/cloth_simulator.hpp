@@ -17,7 +17,8 @@ private:
 	void integratePositions(float dt);
 	Eigen::VectorXd calculateGradient(const Eigen::VectorXd& currentEvaluationPositions, float dt) const;
 	std::vector<SpringConstraint> createSpringConstraints() const;
-	double searchLine(const Eigen::VectorXd& currentEvaluationPositions, const Eigen::VectorXd& gradientDirection, const Eigen::VectorXd& descentDirection);
+	double searchLine(float dt, const Eigen::VectorXd& currentEvaluationPositions, const Eigen::VectorXd& gradientDirection, const Eigen::VectorXd& descentDirection);
+	double evaluateObjectiveFunction(float dt, const Eigen::VectorXd& currentEvaluationPositions) const;
 
 	ClothMesh& m_mesh;
 	// A default value used in the paper's solution
@@ -26,6 +27,7 @@ private:
 	Eigen::VectorXd m_inertiaY;
 	Eigen::VectorXd m_externalForces;
 	std::vector<SpringConstraint> m_springConstraints;
+	Eigen::VectorXd m_velocities;
 	//Eigen::SparseMatrix<double> 
 };
 }
