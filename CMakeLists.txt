@@ -25,6 +25,7 @@ set ( INC
 
 set( SRC
 	src/main.cpp
+	src/scene_parser.cpp
 	src/mtransform.cpp
 	src/sphere_primitive.cpp
 	src/cloth_mesh.cpp

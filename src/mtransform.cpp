@@ -24,10 +24,10 @@ namespace phyl {
 		transform.rotation = QuaternionMultiply(transform.rotation, QuaternionFromAxisAngle(angle, q));
 	}
 
-	void MTransform::scale(const double s){
-		transform.scale.x *= s;
-		transform.scale.y *= s;
-		transform.scale.z *= s;
+	void MTransform::scale(const Vector3 &s){
+		transform.scale.x *= s.x;
+		transform.scale.y *= s.y;
+		transform.scale.z *= s.z;
 	}
 
 	Eigen::Matrix4d MTransform::getEigenTransformationMatrix() {

@@ -12,7 +12,7 @@ namespace phyl {
 
 			void translate(const Vector3 &translate);
 			void rotate(const Vector3 &angle, float q);
-			void scale(const double d);
+			void scale(const Vector3 &s);
 
 			Vector3 getTranslation() const {return transform.translation;}
 			Vector3 getScale() const {return transform.scale;}

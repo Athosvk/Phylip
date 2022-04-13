@@ -44,8 +44,8 @@ attachment_stiffness:
 
 dampening_coeff:
   type: "double"
-  value: 0.001
+  value: 0.1
 
-scene_fixed:
-  type: "bool"
-  value: true
+scene_path:
+  type: "string"
+  value: "resources/scene.yaml"

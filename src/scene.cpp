@@ -1,5 +1,6 @@
 #include "scene.hpp"
 #include "rlgl.h"
+#include "scene_parser.hpp"
 
 #include <filesystem>
 
@@ -19,16 +20,18 @@ namespace phyl {
 		SetCameraMode(camera, CAMERA_FREE);
 		SetCameraPanControl(0);
 
-		primitives.push_back(SpherePrimitive({0.0f,0.0f,0.0f}, 20));
-		MTransform t;
-		t.translate(Vector3{0, 30, 0});
-
-		if(options->getBool("scene_fixed", true)) {
+		std::string scenePath = options->getString("scene_path", "");
+		if(scenePath.empty() || !std::filesystem::exists(scenePath)){
+			primitives.push_back(SpherePrimitive({0.0f,0.0f,0.0f}, 20));
+			MTransform t;
+			t.translate(Vector3{0, 30, 0});
 			cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/6.0, /*subdivision*/ 34, /*hasFixed*/ true);
+			cloth->transformPoints(t);
 		} else {
-			cloth = std::make_shared<ClothMesh>(50, 50, /*mass*/6.0, /*subdivision*/ 30, /*hasFixed*/ false);
+			SceneParser parser(scenePath);
+			parser.GetCloth(cloth);
+			parser.GetPrimitives(primitives);
 		}
-		cloth->transformPoints(t);
 
 		simulator = std::make_unique<ClothSimulator>(options);
 		simulator->setCloth(cloth);
