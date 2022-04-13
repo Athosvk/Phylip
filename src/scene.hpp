@@ -17,8 +17,12 @@ class Scene {
 		~Scene();
 		virtual void update(const float dt);
 		virtual void draw() ;
+		void drawUI();
 		const Camera& getCamera() const;
 
+		void pauseSimulation();
+		void runSimulation();
+		bool isSimulationPaused() const;
 	private:
 		Camera camera;
 		std::vector<SpherePrimitive> primitives;
@@ -27,5 +31,6 @@ class Scene {
 		double m_fixedDt;
 		Shader m_shader;
 		GuiWrapper m_guiWrapper;
+		bool m_paused = true;
 };
 };

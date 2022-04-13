@@ -25,6 +25,7 @@ namespace phyl{
 				currScene->draw();
 				//DrawGrid(10.0f, 10.0f);
 				EndMode3D();
+				currScene->drawUI();
 			EndDrawing();
 		}
 	}
