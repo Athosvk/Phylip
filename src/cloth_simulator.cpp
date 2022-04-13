@@ -9,7 +9,8 @@ namespace phyl {
 		m_bendingStiffnessCoefficient = opts->getDouble("bending_stiffness", 20.0);
 		m_attachmentStiffnessCoefficient = opts->getDouble("attachment_stiffness", 120.0);
 		m_dampeningCoefficient = opts->getDouble("dampening_coeff", 0.001);
-		m_gravityCoeff = opts->getDouble("gravity_coeff", 9.8);
+		m_gravityCoefficient = opts->getDouble("gravity_coeff", 9.8);
+
 		double wx = opts->getDouble("wind_direction_x", 0.0);
 		double wy = opts->getDouble("wind_direction_y", 0.0);
 		double wz = opts->getDouble("wind_direction_z", 0.0);
@@ -19,14 +20,76 @@ namespace phyl {
 
 	void ClothSimulator::setCloth(std::shared_ptr<ClothMesh> mesh){
 		m_mesh = mesh;
-		m_springConstraints = createSpringConstraints();
+		m_stiffnessConstraints = createStiffnessConstraints();
+		m_bendingConstraints = createBendingConstraints();
 		m_attachConstraints = createAttachmentConstraints();
 		size_t componentCount = mesh->GetVertexCount() * 3;
 		m_inertiaY.resize(componentCount);
 		m_externalForces = Eigen::VectorXd::Zero(componentCount);
 		m_velocities = Eigen::VectorXd::Zero(componentCount);
-		Eigen::Vector3d gravity = Eigen::Vector3d(0,-m_gravityCoeff,0);
+		setGravity(m_gravityCoefficient);
+	}
+
+	void ClothSimulator::setElasticStiffness(double coefficient)
+	{
+		m_elasticStiffnessCoefficient = coefficient;
+	}
+
+	void ClothSimulator::setBendingStiffness(double coefficient)
+	{
+		m_bendingStiffnessCoefficient = coefficient;
+	}
+
+	void ClothSimulator::setAttachmentStiffness(double coefficient)
+	{
+		m_attachmentStiffnessCoefficient = coefficient;
+	}
+
+	void ClothSimulator::setDampening(double coefficient)
+	{
+		m_dampeningCoefficient = coefficient;
+	}
+
+	void ClothSimulator::setGravity(double coefficient)
+	{
+		Eigen::Vector3d gravity = Eigen::Vector3d(0,-coefficient,0);
 		m_gravity = gravity.replicate(m_mesh->GetVertexCount(), 1);
+	}
+
+	void ClothSimulator::setWindIntensity(double strength)
+	{
+		m_windIntensity = strength;
+	}
+
+	double ClothSimulator::getElasticStiffness() const
+	{
+		return m_elasticStiffnessCoefficient;
+	}
+
+	double ClothSimulator::getBendingStiffness() const
+	{
+		return m_bendingStiffnessCoefficient;
+	}
+
+	double ClothSimulator::getAttachmentStiffness() const
+	{
+		return m_attachmentStiffnessCoefficient;
+	}
+
+	double ClothSimulator::getDampening() const
+	{
+		return m_dampeningCoefficient;
+	}
+
+	double ClothSimulator::getGravity() const
+	{
+		// This is the same for all vertices anyway. 1 because we're looking for the y
+		return -m_gravity(1);
+	}
+
+	double ClothSimulator::getWindIntensity() const
+	{
+		return m_windIntensity;
 	}
 	
 	void ClothSimulator::integratePositions(float dt)
@@ -68,16 +131,23 @@ namespace phyl {
 	Eigen::VectorXd ClothSimulator::calculateGradient(const Eigen::VectorXd& currentEvaluationPositions, float dt) const
 	{
 		Eigen::VectorXd gradient = Eigen::VectorXd::Zero(m_mesh->GetVertexCount() * 3);
-		for (const auto& constraint : m_springConstraints)
+		for (const auto& constraint : m_stiffnessConstraints)
 		{
-			Eigen::VectorXd constraintGradient = constraint.EvaluateGradient(currentEvaluationPositions);
+			Eigen::VectorXd constraintGradient = constraint.EvaluateGradient(currentEvaluationPositions, m_elasticStiffnessCoefficient);
+			// evaluate gradient
+			gradient.segment<3>(constraint.StartVertex * 3) += constraintGradient;
+			gradient.segment<3>(constraint.EndVertex * 3) -= constraintGradient;
+		}
+		for (const auto& constraint : m_bendingConstraints)
+		{
+			Eigen::VectorXd constraintGradient = constraint.EvaluateGradient(currentEvaluationPositions, m_bendingStiffnessCoefficient);
 			// evaluate gradient
 			gradient.segment<3>(constraint.StartVertex * 3) += constraintGradient;
 			gradient.segment<3>(constraint.EndVertex * 3) -= constraintGradient;
 		}
 		for (const auto& constraint : m_attachConstraints)
 		{
-			Eigen::VectorXd constraintGradient = constraint.EvaluateGradient(currentEvaluationPositions);
+			Eigen::VectorXd constraintGradient = constraint.EvaluateGradient(currentEvaluationPositions, m_attachmentStiffnessCoefficient);
 			// evaluate gradient
 			gradient.segment<3>(constraint.Vertex * 3) += constraintGradient;
 		}
@@ -90,18 +160,16 @@ namespace phyl {
 	{
 		if(!m_mesh->hasFixedVertices()) return {};
 		std::vector<AttachmentConstraint> constraints;
-		constraints.push_back(AttachmentConstraint{m_attachmentStiffnessCoefficient,
-													m_mesh->GetVertexPosition(0), 
+		constraints.push_back(AttachmentConstraint{ m_mesh->GetVertexPosition(0), 
 													0});
 		unsigned int lastIdx = m_mesh->GetSize()-1;
-		constraints.push_back(AttachmentConstraint{m_attachmentStiffnessCoefficient,
-													m_mesh->GetVertexPosition(lastIdx),
+		constraints.push_back(AttachmentConstraint{ m_mesh->GetVertexPosition(lastIdx),
 													lastIdx
 													});
 		return constraints;
 	}
 
-	std::vector<SpringConstraint> ClothSimulator::createSpringConstraints() const
+	std::vector<SpringConstraint> ClothSimulator::createStiffnessConstraints() const
 	{
 		std::vector<SpringConstraint> constraints;
 		const Eigen::VectorXd positions = m_mesh->GetVertexPositions();
@@ -109,12 +177,18 @@ namespace phyl {
 		{
 			Eigen::Vector3d edgeStart = positions.segment<3>(edge.VertexStart * 3);
 			Eigen::Vector3d edgeEnd = positions.segment<3>(edge.VertexEnd * 3);
-			constraints.emplace_back(SpringConstraint{ m_elasticStiffnessCoefficient, edge.VertexStart, edge.VertexEnd, (edgeEnd - edgeStart).norm() });
+			constraints.emplace_back(SpringConstraint{  edge.VertexStart, edge.VertexEnd, (edgeEnd - edgeStart).norm() });
 		}
+		return constraints;
+	}
 
+	std::vector<SpringConstraint> ClothSimulator::createBendingConstraints() const
+	{
+		std::vector<SpringConstraint> constraints;
 		// Laziness
 		auto getIndex = [this](uint32_t column, uint32_t row) { return column * m_mesh->GetSize() + row; };
 
+		const Eigen::VectorXd positions = m_mesh->GetVertexPositions();
 		// Creation of bending constraints, which preserves the dihedral angle between two attached triangles
 		// This creates the triangle pairs with vertices (i, j), (i, j + 1), (i + 1, j + 1), (i, j + 2)
 		// and (i, j), (i + 1, j), (i + 1, j + 1), (i + 2, j). See also slides on mass-spring systems
@@ -133,7 +207,7 @@ namespace phyl {
 					// it's the most descriptive I could come up with
 					uint32_t triIndexV1 = getIndex(i + 2, j);
 					Eigen::Vector3d triV1 = positions.segment<3>(triIndexV1 * 3);
-					constraints.emplace_back(SpringConstraint{m_bendingStiffnessCoefficient, triIndexV0, triIndexV1, (triV1 - triV0).norm() });
+					constraints.emplace_back(SpringConstraint{ triIndexV0, triIndexV1, (triV1 - triV0).norm() });
 				}
 
 				if (j + 2 < m_mesh->GetSize())
@@ -142,11 +216,12 @@ namespace phyl {
 					// it's the most descriptive I could come up with
 					uint32_t triIndexV1 = getIndex(i, j + 2);
 					Eigen::Vector3d triV1 = positions.segment<3>(triIndexV1 * 3);
-					constraints.emplace_back(SpringConstraint{m_bendingStiffnessCoefficient, triIndexV0, triIndexV1, (triV1 - triV0).norm() });
+					constraints.emplace_back(SpringConstraint{ triIndexV0, triIndexV1, (triV1 - triV0).norm() });
 				}
 			}
 		}
 		return constraints;
+
 	}
 
 	double ClothSimulator::searchLine(float dt, const Eigen::VectorXd& currentEvaluationPositions, const Eigen::VectorXd& gradientDirection, const Eigen::VectorXd& descentDirection)
@@ -183,13 +258,17 @@ namespace phyl {
 	double ClothSimulator::evaluateObjectiveFunction(float dt, const Eigen::VectorXd& currentEvaluationPositions) const
 	{
 		double potential = 0.0;
-		for (const SpringConstraint& constraint : m_springConstraints)
+		for (const SpringConstraint& constraint : m_stiffnessConstraints)
 		{
-			potential += constraint.EvaluatePotentialEnergy(currentEvaluationPositions);
+			potential += constraint.EvaluatePotentialEnergy(currentEvaluationPositions, m_elasticStiffnessCoefficient);
+		}
+		for (const SpringConstraint& constraint : m_bendingConstraints)
+		{
+			potential += constraint.EvaluatePotentialEnergy(currentEvaluationPositions, m_bendingStiffnessCoefficient);
 		}
 		for (const AttachmentConstraint& constraint : m_attachConstraints)
 		{
-			potential += constraint.EvaluatePotentialEnergy(currentEvaluationPositions);
+			potential += constraint.EvaluatePotentialEnergy(currentEvaluationPositions, m_attachmentStiffnessCoefficient);
 		}
 
 		potential -= currentEvaluationPositions.dot(m_externalForces);

@@ -23,6 +23,7 @@ class Scene {
 		void pauseSimulation();
 		void runSimulation();
 		bool isSimulationPaused() const;
+		ClothSimulator& getClothSimulator() const;
 	private:
 		Camera camera;
 		std::vector<SpherePrimitive> primitives;

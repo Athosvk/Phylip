@@ -4,11 +4,10 @@
 namespace phyl {
 	struct AttachmentConstraint
 	{
-		double Stiffness;
 		Eigen::Vector3d Pos;
 		unsigned int Vertex;
 
-		Eigen::Vector3d EvaluateGradient(const Eigen::VectorXd& evaluationPositions) const;
-		double EvaluatePotentialEnergy(const Eigen::VectorXd& evaluationPositions) const;
+		Eigen::Vector3d EvaluateGradient(const Eigen::VectorXd& evaluationPositions, double stiffness) const;
+		double EvaluatePotentialEnergy(const Eigen::VectorXd& evaluationPositions, double stiffness) const;
 	};
 }

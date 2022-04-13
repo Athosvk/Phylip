@@ -80,6 +80,11 @@ namespace phyl {
 		return m_paused;
 	}
 
+	ClothSimulator& Scene::getClothSimulator() const
+	{
+		return *simulator;
+	}
+
 	void Scene::draw() {
 		rlDisableBackfaceCulling();
 		cloth->draw();

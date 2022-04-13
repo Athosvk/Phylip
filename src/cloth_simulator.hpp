@@ -19,10 +19,24 @@ public:
 
 	void update(const std::vector<SpherePrimitive> &prims, const float dt);
 	void setCloth(std::shared_ptr<ClothMesh> mesh);
+	void setElasticStiffness(double coefficient);
+	void setBendingStiffness(double coefficient);
+	void setAttachmentStiffness(double coefficient);
+	void setDampening(double coefficient);
+	void setGravity(double coefficient);
+	void setWindIntensity(double strength);
+
+	double getElasticStiffness() const;
+	double getBendingStiffness() const;
+	double getAttachmentStiffness() const;
+	double getDampening() const;
+	double getGravity() const;
+	double getWindIntensity() const;
 private:
 	void integratePositions(float dt);
 	Eigen::VectorXd calculateGradient(const Eigen::VectorXd& currentEvaluationPositions, float dt) const;
-	std::vector<SpringConstraint> createSpringConstraints() const;
+	std::vector<SpringConstraint> createStiffnessConstraints() const;
+	std::vector<SpringConstraint> createBendingConstraints() const;
 	std::vector<AttachmentConstraint> createAttachmentConstraints() const;
 	double searchLine(float dt, const Eigen::VectorXd& currentEvaluationPositions, const Eigen::VectorXd& gradientDirection, const Eigen::VectorXd& descentDirection);
 	double evaluateObjectiveFunction(float dt, const Eigen::VectorXd& currentEvaluationPositions) const;
@@ -33,15 +47,16 @@ private:
 	double m_bendingStiffnessCoefficient 		= 20.;
 	double m_attachmentStiffnessCoefficient 	= 120.;
 	double m_dampeningCoefficient 				= 0.001;
-	double m_gravityCoeff						= 9.8;
 	double m_windIntensity 						= 0.0;
+	double m_gravityCoefficient					= 9.8;
 
 	Eigen::Vector3d m_windDirection;
 	Eigen::VectorXd m_gravity;
 	Eigen::SparseMatrix<double> m_mass;
 	Eigen::VectorXd m_inertiaY;
 	Eigen::VectorXd m_externalForces;
-	std::vector<SpringConstraint> m_springConstraints;
+	std::vector<SpringConstraint> m_stiffnessConstraints;
+	std::vector<SpringConstraint> m_bendingConstraints;
 	std::vector<AttachmentConstraint> m_attachConstraints;
 	Eigen::VectorXd m_velocities;
 };
