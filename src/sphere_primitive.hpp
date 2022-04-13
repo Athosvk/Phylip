@@ -10,7 +10,7 @@
 namespace phyl {
 	class SpherePrimitive{
 		public:
-			SpherePrimitive(Vector3 center, int radius = 1);
+			SpherePrimitive(Vector3 center, int radius = 1, Color c = LIME);
 
 			BoundingBox getBBox() const;
 

@@ -13,8 +13,15 @@ cloth:
   fixed: false
 
 spheres: 
-  - radius: 18 
+  - radius: 10000
+    color: 0
     center:
       x: 0
-      y: 2
+      y: -10200
+      z: 0
+  - radius: 20
+    color: 1
+    center:
+      x: 0
+      y: 0
       z: 0

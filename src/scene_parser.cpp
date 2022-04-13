@@ -52,7 +52,33 @@ namespace phyl {
 				center.z = c["z"] ? c["z"].as<float>() : 0;
 			}
 			double rad = s["radius"] ? s["radius"].as<double>() : 1.0f;
-			primitives.push_back(SpherePrimitive(center, rad));
+			Color c = s["color"] ? GetColor(s["color"].as<int>()) : LIME;
+			primitives.push_back(SpherePrimitive(center, rad, c));
+		}
+	}
+	Color SceneParser::GetColor(int i) {
+		switch(i){
+			case 0:
+				return LIGHTGRAY;
+			case 1:
+				return RED;
+			case 2:
+				return GOLD;
+			case 3:
+				return VIOLET;
+			case 4:
+				return BEIGE;
+			case 5:
+				return SKYBLUE;
+			case 6:
+				return PINK;
+			case 7:
+				return DARKGREEN;
+			case 8:
+				return MAROON;
+			case 9:
+			default:
+				return LIME;
 		}
 	}
 }
