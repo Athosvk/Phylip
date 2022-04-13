@@ -34,7 +34,7 @@ cam_fov:
 
 elastic_stiffness:
   type: "double"
-  value: 80
+  value: 120
 bending_stiffness:
   type: "double"
   value: 20

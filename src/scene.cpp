@@ -21,7 +21,7 @@ namespace phyl {
 		SetCameraPanControl(0);
 
 		std::string scenePath = options->getString("scene_path", "");
-		if(scenePath.empty() || !std::filesystem::exists(scenePath)){
+		if(scenePath.empty() || !std::filesystem::exists(scenePath)){ /* Load default scene */
 			primitives.push_back(SpherePrimitive({0.0f,0.0f,0.0f}, 20));
 			MTransform t;
 			t.translate(Vector3{0, 30, 0});
@@ -32,7 +32,7 @@ namespace phyl {
 			parser.GetCloth(cloth);
 			parser.GetPrimitives(primitives);
 		}
-
+		assert(cloth != nullptr);
 		simulator = std::make_unique<ClothSimulator>(options);
 		simulator->setCloth(cloth);
 
