@@ -191,7 +191,7 @@ namespace phyl {
 
 		Eigen::VectorXd y = currentEvaluationPositions - m_inertiaY;
 		double inertiaTerm = 0.5 * y.transpose() * m_mesh->GetVertexMasses() * y;
-		return inertiaTerm + potential * dt;
+		return inertiaTerm + potential * dt * dt;
 	}
 
 	void ClothSimulator::update(const std::vector<SpherePrimitive> &prims, const float dt) {
