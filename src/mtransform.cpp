@@ -18,16 +18,19 @@ namespace phyl {
 		transform.translation.x += translate.x;
 		transform.translation.y += translate.y;
 		transform.translation.z += translate.z;
+		updated = false;
 	}
 
 	void MTransform::rotate(const Vector3 &angle, float q){
 		transform.rotation = QuaternionMultiply(transform.rotation, QuaternionFromAxisAngle(angle, q));
+		updated = false;
 	}
 
 	void MTransform::scale(const Vector3 &s){
 		transform.scale.x *= s.x;
 		transform.scale.y *= s.y;
 		transform.scale.z *= s.z;
+		updated = false;
 	}
 
 	Eigen::Matrix4d MTransform::getEigenTransformationMatrix() {
@@ -44,9 +47,7 @@ namespace phyl {
 		Matrix mScale = MatrixScale(transform.scale.x, transform.scale.y, transform.scale.z);
 		Matrix mRotate = QuaternionToMatrix(transform.rotation);
 		Matrix mTranslate = MatrixTranslate(transform.translation.x, transform.translation.y, transform.translation.z);
-		Matrix mTransf = MatrixMultiply(MatrixMultiply(mScale, mRotate), mTranslate);
-		//Matrix mTransf = MatrixMultiply(mScale, mTranslate);
-		transformMat = MatrixMultiply(transformMat, mTransf);
+		transformMat = MatrixMultiply(MatrixMultiply(mScale, mRotate), mTranslate);
 		updated = true;
 	}
 }

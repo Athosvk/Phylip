@@ -4,24 +4,36 @@
 
 #include <cassert>
 #include <vector>
+#include <iostream>
 
 namespace phyl {
-	SpherePrimitive::SpherePrimitive(Vector3 center, int rad) : radius(rad), center(center) {}
+	SpherePrimitive::SpherePrimitive(Vector3 center, int rad) : m_radius(rad){
+		m_mesh = GenMeshSphere(m_radius, 32, 32);
+		m_mat = LoadMaterialDefault();
+		m_transform.translate(center);
+	}
 
-	void SpherePrimitive::unload() {}
-
+	void SpherePrimitive::unload() {
+		UnloadMaterial(m_mat);
+		UnloadMesh(m_mesh);
+	}
 	void SpherePrimitive::draw() {
-		DrawSphere(center, radius, WHITE);
+		DrawMesh(m_mesh, m_mat, m_transform.getTransformationMatrix());
+	}
+
+	BoundingBox SpherePrimitive::getBBox() const {
+		return GetMeshBoundingBox(m_mesh);
 	}
 
 	void SpherePrimitive::update(const float dt) {
-		//center = Vector3{center.x + 0.0f, center.y + 1.0f * dt, center.z + 0.0f};
+		//m_transform.translate({0.0,0.0,0.1f*dt});
 	}
 
 	bool SpherePrimitive::intersection(const Eigen::Vector3d &p, Eigen::Vector3d& contactNormal, double& dist) const {
-		Eigen::Vector3d centerEigen = Eigen::Vector3d(center.x, center.y, center.z);
-		Eigen::Vector3d diff = p - centerEigen;
-		dist = diff.norm() - radius - 0.1;
+		Vector3 pos = m_transform.getTranslation();
+		Eigen::Vector3d center = Eigen::Vector3d(pos.x, pos.y, pos.z);
+		Eigen::Vector3d diff = p - center;
+		dist = diff.norm() - m_radius - 0.1;
 		if (dist < 0) {
 			contactNormal = diff.normalized();
 			return true;

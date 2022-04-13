@@ -1,8 +1,8 @@
 cloth:
-  mass: 10.0
-  width: 50
-  height: 50
-  lod: 34
+  mass: 5.0
+  width: 100
+  height: 100
+  lod: 60
   transform:
     translation:
       x: 0
@@ -13,6 +13,6 @@ cloth:
 spheres: 
   - center:
       x: 10
-      y: 00
+      y: 2
       z: 0
     radius: 10
