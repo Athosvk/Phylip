@@ -29,7 +29,7 @@ namespace phyl {
 		Eigen::VectorXd currentBest = m_inertiaY;
 		bool converged = false;
 		uint32_t currentIteration = 0;
-		const uint32_t MaxIterations = 10;
+		const uint32_t MaxIterations = 200;
 
 		while (!converged && currentIteration++ < MaxIterations)
 		{
@@ -149,7 +149,7 @@ namespace phyl {
 		Eigen::VectorXd currentLinePosition;
 		// This is just used by the factor to control the speed of convergence for the step size itself, 
 		//	0.1 being the default
-		const double StepsizeBetaFactor = 0.1;
+		const double StepsizeBetaFactor = 0.9;
 		double currentStepSize = 1.0 / StepsizeBetaFactor;
 
 		// Initial values simply to trigger the while loop
@@ -167,7 +167,7 @@ namespace phyl {
 
 			// Not exactly sure how this factor works, but I believe this is a factor to control 
 			// the accuracy, with higher alpha being a higher tolerance for errors.
-			const double StepsizeAlphaFactor = 0.25;
+			const double StepsizeAlphaFactor = 0.5;
 			rhs = initialObjectiveValue + StepsizeAlphaFactor * currentStepSize *
 				// Implemented in the original code as g^t * -g, but this should be the same
 				gradientDirection.dot(descentDirection);
@@ -211,7 +211,8 @@ namespace phyl {
 				Eigen::Vector3d normal;
 				double distance;
 				if(p.intersection(v, normal, distance)){
-					penetration.block<3,1>(3*i, 0) += (distance) * normal;
+					double VisualAdjustmentMultiplier = 1.09;
+					penetration.block<3,1>(3*i, 0) += (distance * VisualAdjustmentMultiplier) * normal;
 				}
 			}
 			m_mesh->SetVertexPositions(m_mesh->GetVertexPositions() - penetration);
