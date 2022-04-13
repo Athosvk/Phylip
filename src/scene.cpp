@@ -27,12 +27,9 @@ namespace phyl {
 		m_shader = LoadShader("resources/shaders/lighting_vs.glsl",
 				"resources/shaders/lighting_fs.glsl");
 		m_shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(m_shader, "viewPos");
-		int ambientLoc = GetShaderLocation(m_shader, "ambient");
-		float ambientCol[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-		SetShaderValue(m_shader, ambientLoc, ambientCol, SHADER_UNIFORM_VEC4);
 		Light lights[2] = { 0 };
-		lights[0] = CreateLight(LIGHT_DIRECTIONAL, Vector3Zero(), (Vector3){ 0, -0.4, -0.6 }, YELLOW, m_shader);
-		lights[1] = CreateLight(LIGHT_POINT, (Vector3){ 0, 100.3, -30.0 }, Vector3Zero(), PURPLE, m_shader);
+		lights[0] = CreateLight(LIGHT_DIRECTIONAL, Vector3Zero(), (Vector3){ 0, -0.4, -0.6 }, WHITE, m_shader);
+		lights[1] = CreateLight(LIGHT_POINT, (Vector3){ 0, 60.3, -30.0 }, Vector3Zero(), WHITE, m_shader);
 
 		std::string scenePath = options->getString("scene_path", "");
 		if(scenePath.empty() || !std::filesystem::exists(scenePath)){ /* Load default scene */
