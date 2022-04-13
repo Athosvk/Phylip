@@ -14,5 +14,7 @@ namespace phyl{
 
 		private:
 			YAML::Node m_sceneNode;
+
+			Color GetColor(int i);
 	};
 }

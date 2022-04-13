@@ -7,11 +7,11 @@
 #include <iostream>
 
 namespace phyl {
-	SpherePrimitive::SpherePrimitive(Vector3 center, int rad) : m_radius(rad){
+	SpherePrimitive::SpherePrimitive(Vector3 center, int rad, Color c) : m_radius(rad){
 		m_mesh = GenMeshSphere(m_radius, 32, 32);
 		m_mat = LoadMaterialDefault();
 		m_transform.translate(center);
-		m_mat.maps[0].color = LIME;
+		m_mat.maps[0].color = c;
 	}
 
 	void SpherePrimitive::unload() {

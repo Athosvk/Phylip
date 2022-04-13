@@ -13,7 +13,7 @@ cam_pos_x:
   value: 0.0
 cam_pos_y:
   type: "float"
-  value: 50.0
+  value: 00.0
 cam_pos_z:
   type: "float"
   value: 50.0
@@ -37,14 +37,14 @@ elastic_stiffness:
   value: 100
 bending_stiffness:
   type: "double"
-  value: 50
+  value: 70
 attachment_stiffness:
   type: "double"
   value: 120
 
 dampening_coeff:
   type: "double"
-  value: 0.01
+  value: 0.001
 
 wind_direction_x:
   type: "double"
@@ -57,7 +57,7 @@ wind_direction_z:
   value: 0.0
 wind_intensity:
   type: "double"
-  value: 0.05
+  value: 0.00
 
 scene_path:
   type: "string"
