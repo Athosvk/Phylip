@@ -1,9 +1,9 @@
 screen_width:
   type: "int"
-  value: 800
+  value: 1280
 screen_height:
   type: "int"
-  value: 400
+  value: 720
 target_fps:
   type: "int"
   value: 30
@@ -34,10 +34,10 @@ cam_fov:
 
 elastic_stiffness:
   type: "double"
-  value: 10
+  value: 80
 bending_stiffness:
   type: "double"
-  value: 10
+  value: 20
 attachment_stiffness:
   type: "double"
   value: 120

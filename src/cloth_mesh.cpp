@@ -182,7 +182,7 @@ namespace phyl{
 
 	const uint32_t ClothMesh::GetSize() const
 	{
-		return lod;
+		return lod+1;
 	}
 
 	ClothMesh::~ClothMesh(){
