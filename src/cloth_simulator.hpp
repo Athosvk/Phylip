@@ -34,7 +34,9 @@ private:
 	double m_attachmentStiffnessCoefficient 	= 120.;
 	double m_dampeningCoefficient 				= 0.001;
 	double m_gravityCoeff						= 9.8;
+	double m_windIntensity 						= 0.0;
 
+	Eigen::Vector3d m_windDirection;
 	Eigen::VectorXd m_gravity;
 	Eigen::SparseMatrix<double> m_mass;
 	Eigen::VectorXd m_inertiaY;

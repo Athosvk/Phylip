@@ -26,10 +26,12 @@ namespace phyl{
 			uint32_t GetVertexCount() const;
 			const std::vector<Edge> GetEdges() const;
 			const Eigen::VectorXd& GetVertexPositions() const;
+			const Eigen::VectorXd& GetVertexNormals() const;
 			const Eigen::SparseMatrix<double>& GetVertexMasses() const;
 			const uint32_t GetSize() const;
 			void SetVertexPositions(const Eigen::VectorXd& newPositions);
 			Eigen::Vector3d GetVertexPosition(int i) const;
+			Eigen::Vector3d GetVertexNormal(int i) const;
 
 			bool hasFixedVertices() const {return hasFixed;}
 
@@ -61,6 +63,7 @@ namespace phyl{
 			std::vector<Edge> edges;
 
 			Eigen::VectorXd currPositions;
+			Eigen::VectorXd currNormals;
 			Eigen::SparseMatrix<double> massMatrix;
 			Eigen::SparseMatrix<double> invMassMatrix;
 		};

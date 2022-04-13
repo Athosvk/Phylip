@@ -10,6 +10,11 @@ namespace phyl {
 		m_attachmentStiffnessCoefficient = opts->getDouble("attachment_stiffness", 120.0);
 		m_dampeningCoefficient = opts->getDouble("dampening_coeff", 0.001);
 		m_gravityCoeff = opts->getDouble("gravity_coeff", 9.8);
+		double wx = opts->getDouble("wind_direction_x", 0.0);
+		double wy = opts->getDouble("wind_direction_y", 0.0);
+		double wz = opts->getDouble("wind_direction_z", 0.0);
+		m_windIntensity = opts->getDouble("wind_intensity", 0.0);
+		m_windDirection = Eigen::Vector3d(wx, wy, wz);
 	}
 
 	void ClothSimulator::setCloth(std::shared_ptr<ClothMesh> mesh){
@@ -88,7 +93,7 @@ namespace phyl {
 		constraints.push_back(AttachmentConstraint{m_attachmentStiffnessCoefficient,
 													m_mesh->GetVertexPosition(0), 
 													0});
-		unsigned int lastIdx = m_mesh->GetSize();
+		unsigned int lastIdx = m_mesh->GetSize()-1;
 		constraints.push_back(AttachmentConstraint{m_attachmentStiffnessCoefficient,
 													m_mesh->GetVertexPosition(lastIdx),
 													lastIdx
@@ -199,7 +204,9 @@ namespace phyl {
 		// integrated position
 		m_inertiaY = m_mesh->GetVertexPositions() + m_velocities * dt;
 
-		m_externalForces = m_mesh->GetVertexMasses() * m_gravity;
+		//wind_force = c[norm \dot (dir - vel)]*norm
+		Eigen::VectorXd windForce = m_windIntensity * (m_mesh->GetVertexNormals().dot(m_windDirection-m_velocities))*m_mesh->GetVertexNormals();
+		m_externalForces = m_mesh->GetVertexMasses() * m_gravity + windForce;
 		integratePositions(dt);
 		
 		/* Collisions resolution */

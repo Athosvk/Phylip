@@ -18,6 +18,9 @@ namespace phyl{
 	Eigen::Vector3d ClothMesh::GetVertexPosition(int i) const {
 		return currPositions.block<3,1>(3*i, 0);
 	}
+	Eigen::Vector3d ClothMesh::GetVertexNormal(int i) const {
+		return currNormals.block<3,1>(3*i, 0);
+	}
 
 	void ClothMesh::draw(){
 		updateMesh();
@@ -170,6 +173,11 @@ namespace phyl{
 		return currPositions;
 	}
 
+	const Eigen::VectorXd& ClothMesh::GetVertexNormals() const
+	{
+		return currNormals;
+	}
+
 	const Eigen::SparseMatrix<double>& ClothMesh::GetVertexMasses() const
 	{
 		return massMatrix;
@@ -199,8 +207,10 @@ namespace phyl{
 		double invMassPerVertex = 1.0/massPerVertex;
 
 		currPositions.resize(nVerts * 3, 1);
+		currNormals.resize(nVerts * 3, 1);
 		for(int i = 0; i < nVerts * 3; i++){
 			currPositions[i] = mesh.vertices[i];
+			currNormals[i] = mesh.normals[i];
 		}
 
 		std::vector<Eigen::Triplet<double>> massTriplets;
@@ -217,15 +227,13 @@ namespace phyl{
 
 	void ClothMesh::recomputeNormals(){
 		// reset all the normal.
-		for(int i = 0; i < mesh.vertexCount * 3; ++i) {
-			mesh.normals[i] = 0;
-		}
+		currNormals.setZero();
 
 		// calculate normal for each individual triangle
 		unsigned int triangle_num = mesh.triangleCount;
 		unsigned int id0, id1, id2;
 		Eigen::Vector3d p0, p1, p2;
-		Eigen::Vector3d normal;
+		Eigen::Vector3d meshNormal;
 		for(unsigned int i = 0; i < triangle_num; ++i){
 			id0 = mesh.indices[3 * i];
 			id1 = mesh.indices[3 * i + 1];
@@ -235,21 +243,20 @@ namespace phyl{
 			p1 = GetVertexPosition(id1);
 			p2 = GetVertexPosition(id2);
 
-			normal = (p1-p0).cross(p2-p1);
-			normal.normalize();
-			Vector3 meshNormal{(float)normal[0], (float)normal[1], (float)normal[2]};
+			meshNormal = (p1-p0).cross(p2-p1);
+			meshNormal.normalize();
 
-			mesh.normals[id0*3+0] = mesh.normals[id0*3+0] + meshNormal.x;
-			mesh.normals[id0*3+1] = mesh.normals[id0*3+1] + meshNormal.y;
-			mesh.normals[id0*3+2] = mesh.normals[id0*3+2] + meshNormal.z;
+			currNormals[id0*3+0] = currNormals[id0*3+0] + meshNormal.coeff(0);
+			currNormals[id0*3+1] = currNormals[id0*3+1] + meshNormal.coeff(1);
+			currNormals[id0*3+2] = currNormals[id0*3+2] + meshNormal.coeff(2);
 
-			mesh.normals[id1*3+0] = mesh.normals[id1*3+0] + meshNormal.x;
-			mesh.normals[id1*3+1] = mesh.normals[id1*3+1] + meshNormal.y;
-			mesh.normals[id1*3+2] = mesh.normals[id1*3+2] + meshNormal.z;
+			currNormals[id1*3+0] = currNormals[id1*3+0] + meshNormal.coeff(0);
+			currNormals[id1*3+1] = currNormals[id1*3+1] + meshNormal.coeff(1);
+			currNormals[id1*3+2] = currNormals[id1*3+2] + meshNormal.coeff(2);
 
-			mesh.normals[id2*3+0] = mesh.normals[id2*3+0] + meshNormal.x;
-			mesh.normals[id2*3+1] = mesh.normals[id2*3+1] + meshNormal.y;
-			mesh.normals[id2*3+2] = mesh.normals[id2*3+2] + meshNormal.z;
+			currNormals[id2*3+0] = currNormals[id2*3+0] + meshNormal.coeff(0);
+			currNormals[id2*3+1] = currNormals[id2*3+1] + meshNormal.coeff(1);
+			currNormals[id2*3+2] = currNormals[id2*3+2] + meshNormal.coeff(2);
 		}
 	}
 
@@ -258,6 +265,7 @@ namespace phyl{
 		recomputeNormals();
 		for(int i = 0; i < mesh.vertexCount * 3; i++){
 			mesh.vertices[i] = currPositions[i];
+			mesh.normals[i] = currNormals[i];
 		}
 		// VBO index 0 are the vertex positions, see source code for other buffers
 		UpdateMeshBuffer(mesh, 0, mesh.vertices, mesh.vertexCount * 3 * sizeof(float), 0);

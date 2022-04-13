@@ -34,10 +34,10 @@ cam_fov:
 
 elastic_stiffness:
   type: "double"
-  value: 80
+  value: 100
 bending_stiffness:
   type: "double"
-  value: 20
+  value: 50
 attachment_stiffness:
   type: "double"
   value: 120
@@ -45,6 +45,19 @@ attachment_stiffness:
 dampening_coeff:
   type: "double"
   value: 0.01
+
+wind_direction_x:
+  type: "double"
+  value: 0.0
+wind_direction_y:
+  type: "double"
+  value: 1.0
+wind_direction_z:
+  type: "double"
+  value: 0.0
+wind_intensity:
+  type: "double"
+  value: 0.05
 
 scene_path:
   type: "string"
