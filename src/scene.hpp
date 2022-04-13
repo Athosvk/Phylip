@@ -14,6 +14,7 @@ namespace phyl{
 class Scene {
 	public: 
 		Scene(Options* options);
+		~Scene();
 		virtual void update(const float dt);
 		virtual void draw() ;
 		const Camera& getCamera() const;
@@ -24,6 +25,7 @@ class Scene {
 		std::shared_ptr<ClothMesh> cloth;
 		std::unique_ptr<ClothSimulator> simulator;
 		double m_fixedDt;
+		Shader m_shader;
 		GuiWrapper m_guiWrapper;
 };
 };

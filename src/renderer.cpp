@@ -1,8 +1,5 @@
 #include "renderer.hpp"
 
-#include <iostream>
-
-
 namespace phyl{
 	Renderer::Renderer(Options *_options)
 	: options{_options} {
@@ -23,10 +20,10 @@ namespace phyl{
 	void Renderer::draw() {
 		if(currScene){
 			BeginDrawing();
-				ClearBackground(BLUE);
+				ClearBackground(WHITE);
 				BeginMode3D(currScene->getCamera());
 				currScene->draw();
-				DrawGrid(10.0f, 10.0f);
+				//DrawGrid(10.0f, 10.0f);
 				EndMode3D();
 			EndDrawing();
 		}

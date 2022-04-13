@@ -21,6 +21,7 @@ namespace phyl{
 			void draw();
 			void update(const float dt);
 			void transformPoints(MTransform &t);
+			void setShader(Shader *shader);
 
 			uint32_t GetVertexCount() const;
 			const std::vector<Edge> GetEdges() const;
@@ -46,6 +47,7 @@ namespace phyl{
 			 * Update the VBOs of the mesh
 			 */
 			void updateMesh();
+			void recomputeNormals();
 
 			int width, height, lod;
 			int vertsNumber;

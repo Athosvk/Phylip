@@ -6,9 +6,13 @@ namespace phyl{
 		genMesh();
 		genEdges();
 		mat = LoadMaterialDefault();
-		mat.maps[0].color.r = 225;
-		mat.maps[0].color.g = 125;
-		mat.maps[0].color.b = 50;
+		mat.maps[0].color.r = 0;
+		mat.maps[0].color.g = 0;
+		mat.maps[0].color.b = 150;
+	}
+
+	void ClothMesh::setShader(Shader *shader) {
+		mat.shader = *shader;
 	}
 
 	Eigen::Vector3d ClothMesh::GetVertexPosition(int i) const {
@@ -211,13 +215,53 @@ namespace phyl{
 		invMassMatrix.setFromTriplets(invMassTriplets.begin(), invMassTriplets.end());
 	}
 
+	void ClothMesh::recomputeNormals(){
+		// reset all the normal.
+		for(int i = 0; i < mesh.vertexCount * 3; ++i) {
+			mesh.normals[i] = 0;
+		}
+
+		// calculate normal for each individual triangle
+		unsigned int triangle_num = mesh.triangleCount;
+		unsigned int id0, id1, id2;
+		Eigen::Vector3d p0, p1, p2;
+		Eigen::Vector3d normal;
+		for(unsigned int i = 0; i < triangle_num; ++i){
+			id0 = mesh.indices[3 * i];
+			id1 = mesh.indices[3 * i + 1];
+			id2 = mesh.indices[3 * i + 2];
+
+			p0 = GetVertexPosition(id0);
+			p1 = GetVertexPosition(id1);
+			p2 = GetVertexPosition(id2);
+
+			normal = (p1-p0).cross(p2-p1);
+			normal.normalize();
+			Vector3 meshNormal{(float)normal[0], (float)normal[1], (float)normal[2]};
+
+			mesh.normals[id0*3+0] = mesh.normals[id0*3+0] + meshNormal.x;
+			mesh.normals[id0*3+1] = mesh.normals[id0*3+1] + meshNormal.y;
+			mesh.normals[id0*3+2] = mesh.normals[id0*3+2] + meshNormal.z;
+
+			mesh.normals[id1*3+0] = mesh.normals[id1*3+0] + meshNormal.x;
+			mesh.normals[id1*3+1] = mesh.normals[id1*3+1] + meshNormal.y;
+			mesh.normals[id1*3+2] = mesh.normals[id1*3+2] + meshNormal.z;
+
+			mesh.normals[id2*3+0] = mesh.normals[id2*3+0] + meshNormal.x;
+			mesh.normals[id2*3+1] = mesh.normals[id2*3+1] + meshNormal.y;
+			mesh.normals[id2*3+2] = mesh.normals[id2*3+2] + meshNormal.z;
+		}
+	}
+
 	void ClothMesh::updateMesh()
 	{
+		recomputeNormals();
 		for(int i = 0; i < mesh.vertexCount * 3; i++){
 			mesh.vertices[i] = currPositions[i];
 		}
 		// VBO index 0 are the vertex positions, see source code for other buffers
 		UpdateMeshBuffer(mesh, 0, mesh.vertices, mesh.vertexCount * 3 * sizeof(float), 0);
+		UpdateMeshBuffer(mesh, 2, mesh.normals, mesh.vertexCount * 3 * sizeof(float), 0);
 	}
 
 };

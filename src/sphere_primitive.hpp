@@ -20,6 +20,8 @@ namespace phyl {
 
 			bool intersection(const Eigen::Vector3d &p, Eigen::Vector3d& contactNormal, double& dist) const;
 
+			void setShader(Shader *shader);
+
 		private:
 			Mesh generate();
 

@@ -42,4 +42,8 @@ namespace phyl {
 			return false;
 		}
 	}
+
+	void SpherePrimitive::setShader(Shader *shader) {
+		m_mat.shader = *shader;
+	}
 }
