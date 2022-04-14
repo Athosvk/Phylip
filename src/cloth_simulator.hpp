@@ -25,6 +25,7 @@ public:
 	void setDampening(double coefficient);
 	void setGravity(double coefficient);
 	void setWindIntensity(double strength);
+	void setWindDirection(Eigen::Vector3d &dir) {m_windDirection = dir;}
 
 	double getElasticStiffness() const;
 	double getBendingStiffness() const;
@@ -32,6 +33,9 @@ public:
 	double getDampening() const;
 	double getGravity() const;
 	double getWindIntensity() const;
+	Eigen::VectorXd getWindDirection() const {return m_windDirection;}
+
+
 private:
 	void integratePositions(float dt);
 	Eigen::VectorXd calculateGradient(const Eigen::VectorXd& currentEvaluationPositions, float dt) const;

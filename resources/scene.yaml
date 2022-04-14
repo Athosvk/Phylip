@@ -1,27 +1,27 @@
 cloth:
-  mass: 2.0
-  width: 55
+  mass: 20.0
+  width: 80
   height: 45
   lod: 35
   transform:
     translation:
       x: 0
       y: 30
-      z: 0
+      z: -18
     rotation:
-      x: 0
-  fixed: false
+      x: 90
+  fixed: true
 
 spheres: 
   - radius: 10000
-    color: 0
+    color: 3
     center:
       x: 0
       y: -10200
       z: 0
-  - radius: 20
-    color: 1
-    center:
-      x: 0
-      y: 0
-      z: 0
+  #- radius: 20
+    #color: 1
+    #center:
+      #x: 0
+      #y: 0
+      #z: -5

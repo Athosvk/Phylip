@@ -258,6 +258,16 @@ namespace phyl{
 			currNormals[id2*3+1] = currNormals[id2*3+1] + meshNormal.coeff(1);
 			currNormals[id2*3+2] = currNormals[id2*3+2] + meshNormal.coeff(2);
 		}
+		for(int i = 0; i < mesh.vertexCount; ++i){
+			Eigen::Vector3d norm= GetVertexNormal(i);
+			if(norm.norm() > 0.001)
+				norm.normalize();
+				SetVertexNormal(i, norm);
+		}
+	}
+
+	void ClothMesh::SetVertexNormal(int i, const Eigen::Vector3d &n) {
+		currNormals.block<3,1>(3*i,0) = n;
 	}
 
 	void ClothMesh::updateMesh()

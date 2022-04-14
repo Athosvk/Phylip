@@ -4,14 +4,15 @@
 #include "raygui.h"
 #include <string>
 #include "scene.hpp"
+#include <iostream>
 
 namespace phyl{
 	GuiWrapper::GuiWrapper(Scene& scene) :
 		scene(scene) {
 		GuiLoadStyle("../external/raygui/styles/dark/dark.rgs");
 
-		panelRectangle = { 20, 10, 280, 350 };
-		contentRectangle = { 0, 0, 260, 400 };
+		panelRectangle = { 0, 0, 280, 720 };
+		contentRectangle = { 0, 0, 260, 700 };
 	}
 	
 	void GuiWrapper::draw(){
@@ -84,5 +85,46 @@ namespace phyl{
 			" 0.1", clothSimulator.getDampening(), 0., 0.1));
 		lastElement.y += 20;
 		GuiLabel(lastElement, TextFormat("%.2f", clothSimulator.getDampening()));
+
+		lastElement.y += Spacing;
+		lastElement.x -= LabelSpacing;
+		GuiLabel(lastElement, "Wind Strenght");
+		lastElement.x += LabelSpacing;
+		clothSimulator.setWindIntensity(GuiSlider(lastElement, "0% ",
+			" 100%", clothSimulator.getWindIntensity(), 0., 0.0008));
+		lastElement.y += 20;
+		GuiLabel(lastElement, TextFormat("%.2f", clothSimulator.getWindIntensity()));
+
+		Eigen::Vector3d dir = clothSimulator.getWindDirection();
+		int tot=0;
+		lastElement.y += Spacing;
+		lastElement.x -= LabelSpacing;
+		GuiLabel(lastElement, "Wind X");
+		lastElement.x += LabelSpacing;
+		bool windX = GuiCheckBox(lastElement, "", dir[0] > 0.0001);
+		if(windX)tot++;
+
+		lastElement.y += Spacing;
+		lastElement.x -= LabelSpacing;
+		GuiLabel(lastElement, "Wind Y");
+		lastElement.x += LabelSpacing;
+		bool windY = GuiCheckBox(lastElement, "", dir[1] > 0.0001);
+		if(windY)tot++;
+
+		lastElement.y += Spacing;
+		lastElement.x -= LabelSpacing;
+		GuiLabel(lastElement, "Wind Z");
+		lastElement.x += LabelSpacing;
+		bool windZ = (GuiCheckBox(lastElement, "", dir[2] > 0.0001));
+		if(windZ)tot++;
+		if(tot>0){
+			dir[0] = windX ? 1.0f/(float)tot : 0.0f;
+			dir[1] = windY ? 1.0f/(float)tot : 0.0f;
+			dir[2] = windZ ? 1.0f/(float)tot : 0.0f;
+		} else {
+			dir = Eigen::Vector3d::Zero();
+		}
+		clothSimulator.setWindDirection(dir);
+
 	}
 }

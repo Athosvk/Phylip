@@ -284,8 +284,8 @@ namespace phyl {
 		m_inertiaY = m_mesh->GetVertexPositions() + m_velocities * dt;
 
 		//wind_force = c[norm \dot (dir - vel)]*norm
-		Eigen::VectorXd windDir = m_windDirection.replicate(m_mesh->GetVertexCount(), 1);
-		Eigen::VectorXd windForce = m_windIntensity * (m_mesh->GetVertexNormals().dot(windDir-m_velocities))*m_mesh->GetVertexNormals();
+		Eigen::VectorXd wF = m_windDirection.replicate(m_mesh->GetVertexCount(), 1);
+		Eigen::VectorXd windForce = m_windIntensity * (m_mesh->GetVertexNormals().dot(wF-m_velocities))*m_mesh->GetVertexNormals();
 		m_externalForces = m_mesh->GetVertexMasses() * m_gravity + windForce;
 		integratePositions(dt);
 		

@@ -32,6 +32,7 @@ namespace phyl{
 			void SetVertexPositions(const Eigen::VectorXd& newPositions);
 			Eigen::Vector3d GetVertexPosition(int i) const;
 			Eigen::Vector3d GetVertexNormal(int i) const;
+			void SetVertexNormal(int i, const Eigen::Vector3d &n);
 
 			bool hasFixedVertices() const {return hasFixed;}
 

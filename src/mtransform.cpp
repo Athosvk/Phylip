@@ -1,5 +1,6 @@
 #include "mtransform.hpp"
 
+
 namespace phyl {
 	MTransform::MTransform() : 
 	updated(false) {
@@ -22,7 +23,7 @@ namespace phyl {
 	}
 
 	void MTransform::rotate(const Vector3 &angle, float q){
-		transform.rotation = QuaternionMultiply(transform.rotation, QuaternionFromAxisAngle(angle, q));
+		transform.rotation = QuaternionMultiply(transform.rotation, QuaternionFromAxisAngle(angle, DEG2RAD*q));
 		updated = false;
 	}
 
