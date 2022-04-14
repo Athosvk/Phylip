@@ -102,7 +102,10 @@ namespace phyl {
 	void Scene::update(const float dt){
 		float cameraPos[3] = { camera.position.x, camera.position.y, camera.position.z };
 		SetShaderValue(m_shader, m_shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
-		UpdateCamera(&camera);
+		Vector2 mousePos = GetMousePosition();
+		if(mousePos.x > /* GUI Width */ 280){
+			UpdateCamera(&camera);
+		}
 
 		if (!m_paused)
 		{
