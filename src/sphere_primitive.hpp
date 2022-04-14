@@ -29,5 +29,7 @@ namespace phyl {
 			Material m_mat;
 			MTransform m_transform;
 			int m_radius;
+	public:
+			Eigen::Vector3d Velocity;
 	};
 };

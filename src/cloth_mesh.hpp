@@ -35,6 +35,7 @@ namespace phyl{
 			Eigen::Vector3d GetVertexNormal(int i) const;
 			void SetVertexNormal(int i, const Eigen::Vector3d &n);
 			std::vector<uint32_t> getFixedVertices() const;
+			double getVertexMass() const;
 
 		private:
 			/*
@@ -56,6 +57,7 @@ namespace phyl{
 			int vertsNumber;
 
 			double mass;
+			double massPerVertex;
 
 			Mesh mesh;
 			Material mat;

@@ -293,6 +293,7 @@ namespace phyl {
 		
 		/* Collisions resolution */
 		Eigen::VectorXd penetration = Eigen::VectorXd(m_mesh->GetVertexCount()*3);
+		Eigen::VectorXd impulses = Eigen::VectorXd(m_mesh->GetVertexCount() * 3);
 		for(const auto &p : prims) {
 			penetration.setZero();
 			for(int i = 0; i < m_mesh->GetVertexCount(); ++i){
@@ -302,6 +303,14 @@ namespace phyl {
 				if(p.intersection(v, normal, distance)){
 					double VisualAdjustmentMultiplier = 1.09;
 					penetration.block<3,1>(3*i, 0) += (distance * VisualAdjustmentMultiplier) * normal;
+					Eigen::Vector3d impulse;
+					double crCoefficent = 1.;
+
+					Eigen::Vector3d vertexVelocity = m_velocities.segment<3>(3 * i);
+					double vertexMass = m_mesh->getVertexMass();
+					// Or second object has infinite mass
+					double j = (- (1 + crCoefficent) * (vertexVelocity - p.Velocity).dot(normal)) / (1 / vertexMass);
+					m_velocities.segment<3>(3 * i) = vertexVelocity + (j / vertexMass) * normal;
 				}
 			}
 			m_mesh->SetVertexPositions(m_mesh->GetVertexPositions() - penetration);

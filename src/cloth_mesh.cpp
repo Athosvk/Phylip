@@ -202,7 +202,7 @@ namespace phyl{
 
 		int nVerts = mesh.vertexCount;
 
-		double massPerVertex = mass/(double)nVerts;
+		massPerVertex = mass/(double)nVerts;
 		double invMassPerVertex = 1.0/massPerVertex;
 
 		currPositions.resize(nVerts * 3, 1);
@@ -271,6 +271,11 @@ namespace phyl{
 
 	std::vector<uint32_t> ClothMesh::getFixedVertices() const {
 		return fixedVertices;
+	}
+
+	double ClothMesh::getVertexMass() const
+	{
+		return massPerVertex;
 	}
 
 	void ClothMesh::updateMesh()
