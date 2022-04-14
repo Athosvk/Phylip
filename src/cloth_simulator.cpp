@@ -104,7 +104,7 @@ namespace phyl {
 		Eigen::VectorXd currentBest = m_inertiaY;
 		bool converged = false;
 		uint32_t currentIteration = 0;
-		const uint32_t MaxIterations = 15;
+		const uint32_t MaxIterations = 200;
 
 		while (!converged && currentIteration++ < MaxIterations)
 		{
