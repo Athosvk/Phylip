@@ -43,12 +43,15 @@ namespace phyl {
 			SceneParser parser(scenePath);
 			parser.GetCloth(cloth);
 			parser.GetPrimitives(primitives);
+			m_movingSpheres = parser.HasMovingSpheres();
 		}
 		assert(cloth != nullptr);
 
 		cloth->setShader(&m_shader);
 		for(auto &p : primitives) {
 			p.setShader(&m_shader);
+			if (!m_movingSpheres)
+				p.Velocity = Eigen::Vector3d::Zero();
 		}
 		simulator = std::make_unique<ClothSimulator>(options);
 		simulator->setCloth(cloth);
@@ -109,9 +112,10 @@ namespace phyl {
 		if (!m_paused)
 		{
 			simulator->update(primitives, m_fixedDt);
-			for (auto& p : primitives) {
-				p.update(dt);
-			}
+			if (m_movingSpheres)
+				for (auto& p : primitives) {
+					p.update(dt);
+				}
 		}
 	}
 

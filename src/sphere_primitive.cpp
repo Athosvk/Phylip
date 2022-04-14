@@ -12,6 +12,7 @@ namespace phyl {
 		m_mat = LoadMaterialDefault();
 		m_transform.translate(center);
 		m_mat.maps[0].color = c;
+		Velocity = { 0.0, 0.0, 100 };
 	}
 
 	void SpherePrimitive::unload() {
@@ -27,7 +28,8 @@ namespace phyl {
 	}
 
 	void SpherePrimitive::update(const float dt) {
-		//m_transform.translate({0.0,0.0,0.1f*dt});
+		auto move = Velocity * dt;
+		m_transform.translate(Vector3 {(float)move.x(), (float)move.y(), (float)move.z()});
 	}
 
 	bool SpherePrimitive::intersection(const Eigen::Vector3d &p, Eigen::Vector3d& contactNormal, double& dist) const {

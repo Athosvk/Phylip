@@ -33,5 +33,6 @@ class Scene {
 		Shader m_shader;
 		GuiWrapper m_guiWrapper;
 		bool m_paused = true;
+		bool m_movingSpheres = true;
 };
 };

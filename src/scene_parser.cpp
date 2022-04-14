@@ -56,6 +56,12 @@ namespace phyl {
 			primitives.push_back(SpherePrimitive(center, rad, c));
 		}
 	}
+
+	bool SceneParser::HasMovingSpheres() const
+	{
+		return m_sceneNode["spheresMoving"] ? m_sceneNode["spheresMoving"].as<bool>() : false;
+	}
+
 	Color SceneParser::GetColor(int i) {
 		switch(i){
 			case 0:

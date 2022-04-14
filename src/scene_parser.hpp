@@ -11,6 +11,7 @@ namespace phyl{
 			SceneParser(const std::string &fp);
 			void GetCloth(std::shared_ptr<ClothMesh> &cloth);
 			void GetPrimitives(std::vector<SpherePrimitive> &primitives);
+			bool HasMovingSpheres() const;
 
 		private:
 			YAML::Node m_sceneNode;
