@@ -7,11 +7,12 @@ namespace phyl{
 		genEdges();
 		mat = LoadMaterialDefault();
 		mat.maps[0].color.r = 0;
-		mat.maps[0].color.g = 0;
+		mat.maps[0].color.g = 50;
 		mat.maps[0].color.b = 150;
+		//mat.maps[0].texture = LoadTexture("/home/lorenzo/Downloads/Jaccobian.png");
 
 		if (hasFixed)
-			fixedVertices = { 0, (uint32_t)lod, (uint32_t)(lod +1) * lod };
+			fixedVertices = { 0, (uint32_t)lod, (uint32_t)(lod +1) * lod, (uint32_t)((lod+1) * (lod+1) - 1)};
 	}
 
 	void ClothMesh::setShader(Shader *shader) {
