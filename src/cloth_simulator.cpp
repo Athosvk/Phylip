@@ -91,7 +91,11 @@ namespace phyl {
 	{
 		return m_windIntensity;
 	}
-	
+
+	std::vector<AttachmentConstraint>& ClothSimulator::getAttachmentConstraints(){
+		return m_attachConstraints;
+	}
+
 	void ClothSimulator::integratePositions(float dt)
 	{
 		Eigen::VectorXd currentBest = m_inertiaY;
@@ -158,14 +162,12 @@ namespace phyl {
 
 	std::vector<AttachmentConstraint> ClothSimulator::createAttachmentConstraints() const
 	{
-		if(!m_mesh->hasFixedVertices()) return {};
 		std::vector<AttachmentConstraint> constraints;
-		constraints.push_back(AttachmentConstraint{ m_mesh->GetVertexPosition(0), 
-													0});
-		unsigned int lastIdx = m_mesh->GetSize()-1;
-		constraints.push_back(AttachmentConstraint{ m_mesh->GetVertexPosition(lastIdx),
-													lastIdx
-													});
+		for (uint32_t vertex : m_mesh->getFixedVertices())
+		{
+			constraints.push_back(AttachmentConstraint{ m_mesh->GetVertexPosition(vertex), 
+														vertex});
+		}
 		return constraints;
 	}
 

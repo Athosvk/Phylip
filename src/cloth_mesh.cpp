@@ -2,13 +2,16 @@
 #include <iostream>
 
 namespace phyl{
-	ClothMesh::ClothMesh(int w, int h, double mass, int lod, bool hasFixed) : width(w), height(h), lod(lod), mass(mass), hasFixed(hasFixed) {
+	ClothMesh::ClothMesh(int w, int h, double mass, int lod, bool hasFixed) : width(w), height(h), lod(lod), mass(mass){
 		genMesh();
 		genEdges();
 		mat = LoadMaterialDefault();
 		mat.maps[0].color.r = 0;
 		mat.maps[0].color.g = 0;
 		mat.maps[0].color.b = 150;
+
+		if (hasFixed)
+			fixedVertices = { 0, (uint32_t)lod, (uint32_t)(lod +1) * lod };
 	}
 
 	void ClothMesh::setShader(Shader *shader) {
@@ -25,13 +28,9 @@ namespace phyl{
 	void ClothMesh::draw(){
 		updateMesh();
 		DrawMesh(mesh, mat, transform.getTransformationMatrix());
-		if(hasFixed){
-			Eigen::Vector3d v1 = GetVertexPosition(0);
-			Vector3 v1Center{(float)v1.coeff(0), (float)v1.coeff(1),(float)v1.coeff(2)};
-			Eigen::Vector3d v2 = GetVertexPosition(lod);
-			Vector3 v2Center{(float)v2.coeff(0), (float)v2.coeff(1),(float)v2.coeff(2)};
-			DrawSphere(v1Center, 0.8, BLACK);
-			DrawSphere(v2Center, 0.8, BLACK);
+		for (uint32_t vertex : fixedVertices){
+			Eigen::Vector3d vertexPosition = GetVertexPosition(vertex);
+			DrawSphere({(float)vertexPosition.coeff(0), (float)vertexPosition.coeff(1),(float)vertexPosition.coeff(2)}, 0.8, BLACK);
 		}
 	}
 
@@ -268,6 +267,10 @@ namespace phyl{
 
 	void ClothMesh::SetVertexNormal(int i, const Eigen::Vector3d &n) {
 		currNormals.block<3,1>(3*i,0) = n;
+	}
+
+	std::vector<uint32_t> ClothMesh::getFixedVertices() const {
+		return fixedVertices;
 	}
 
 	void ClothMesh::updateMesh()

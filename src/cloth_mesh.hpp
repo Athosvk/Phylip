@@ -2,6 +2,7 @@
 
 #include "mtransform.hpp"
 #include "sphere_primitive.hpp"
+#include "attachment_constraint.hpp"
 
 #include "raylib.h"
 #include "Eigen/Dense"
@@ -33,8 +34,7 @@ namespace phyl{
 			Eigen::Vector3d GetVertexPosition(int i) const;
 			Eigen::Vector3d GetVertexNormal(int i) const;
 			void SetVertexNormal(int i, const Eigen::Vector3d &n);
-
-			bool hasFixedVertices() const {return hasFixed;}
+			std::vector<uint32_t> getFixedVertices() const;
 
 		private:
 			/*
@@ -56,12 +56,12 @@ namespace phyl{
 			int vertsNumber;
 
 			double mass;
-			bool hasFixed;
 
 			Mesh mesh;
 			Material mat;
 			MTransform transform;
 			std::vector<Edge> edges;
+			std::vector<uint32_t> fixedVertices;
 
 			Eigen::VectorXd currPositions;
 			Eigen::VectorXd currNormals;

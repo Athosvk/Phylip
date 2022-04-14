@@ -88,7 +88,7 @@ namespace phyl{
 
 		lastElement.y += Spacing;
 		lastElement.x -= LabelSpacing;
-		GuiLabel(lastElement, "Wind Strenght");
+		GuiLabel(lastElement, "Wind Strength");
 		lastElement.x += LabelSpacing;
 		clothSimulator.setWindIntensity(GuiSlider(lastElement, "0% ",
 			" 100%", clothSimulator.getWindIntensity(), 0., 0.0008));
@@ -126,5 +126,15 @@ namespace phyl{
 		}
 		clothSimulator.setWindDirection(dir);
 
+
+		uint32_t index = 0;
+		for (AttachmentConstraint& attachmentConstraint : clothSimulator.getAttachmentConstraints())
+		{
+			lastElement.y += Spacing;
+			lastElement.x -= LabelSpacing;
+			GuiLabel(lastElement, TextFormat("Attachment %i", ++index));
+			lastElement.x += LabelSpacing;
+			attachmentConstraint.Enabled = (GuiCheckBox(lastElement, "", attachmentConstraint.Enabled));
+		}
 	}
 }

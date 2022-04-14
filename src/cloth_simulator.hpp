@@ -34,8 +34,7 @@ public:
 	double getGravity() const;
 	double getWindIntensity() const;
 	Eigen::VectorXd getWindDirection() const {return m_windDirection;}
-
-
+	std::vector<AttachmentConstraint>& getAttachmentConstraints();
 private:
 	void integratePositions(float dt);
 	Eigen::VectorXd calculateGradient(const Eigen::VectorXd& currentEvaluationPositions, float dt) const;
