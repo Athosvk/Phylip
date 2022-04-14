@@ -312,7 +312,7 @@ namespace phyl {
 					double VisualAdjustmentMultiplier = 1.09;
 					penetration.block<3,1>(3*i, 0) += (distance * VisualAdjustmentMultiplier) * normal;
 					Eigen::Vector3d impulse;
-					double crCoefficent = 1.;
+					double crCoefficent = 0.;
 
 					Eigen::Vector3d vertexVelocity = m_velocities.segment<3>(3 * i);
 					double vertexMass = m_mesh->getVertexMass();

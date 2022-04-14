@@ -82,7 +82,7 @@ namespace phyl{
 		GuiLabel(lastElement, "Dampening");
 		lastElement.x += LabelSpacing;
 		clothSimulator.setDampening(GuiSlider(lastElement, "0 ",
-			" 0.1", clothSimulator.getDampening(), 0., 0.1));
+			" 0.1", clothSimulator.getDampening(), 0., 1.0));
 		lastElement.y += 20;
 		GuiLabel(lastElement, TextFormat("%.2f", clothSimulator.getDampening()));
 

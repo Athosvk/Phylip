@@ -59,7 +59,7 @@ namespace phyl {
 
 	bool SceneParser::HasMovingSpheres() const
 	{
-		return m_sceneNode["spheresMoving"] ? m_sceneNode["spheresMoving"].as<bool>() : false;
+		return m_sceneNode["spheres_moving"] ? m_sceneNode["spheres_moving"].as<bool>() : false;
 	}
 
 	Color SceneParser::GetColor(int i) {

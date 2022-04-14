@@ -16,7 +16,7 @@ cam_pos_y:
   value: 50.0
 cam_pos_z:
   type: "float"
-  value: 50.0
+  value: 90.0
 
 cam_dir_x:
   type: "float"
@@ -61,4 +61,4 @@ wind_intensity:
 
 scene_path:
   type: "string"
-  value: "resources/scene.yaml"
+  value: "resources/flat.yaml"

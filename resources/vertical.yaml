@@ -1,0 +1,28 @@
+cloth:
+  mass: 6.0
+  width: 120
+  height: 120
+  lod: 30
+  transform:
+    translation:
+      x: 0
+      z: -20
+    rotation:
+      x: 90
+  fixed: true
+
+spheres_moving: true
+
+spheres: 
+  - radius: 25
+    color: 2
+    center:
+      x: 0
+      y: 00
+      z: 30
+  - radius: 35
+    color: 8
+    center:
+      x: 0
+      y: 00
+      z: 950

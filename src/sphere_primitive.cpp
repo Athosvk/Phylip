@@ -12,7 +12,7 @@ namespace phyl {
 		m_mat = LoadMaterialDefault();
 		m_transform.translate(center);
 		m_mat.maps[0].color = c;
-		Velocity = { 0.0, 0.0, 100 };
+		Velocity = { 0.0, 0.0, -50 };
 	}
 
 	void SpherePrimitive::unload() {
@@ -36,7 +36,7 @@ namespace phyl {
 		Vector3 pos = m_transform.getTranslation();
 		Eigen::Vector3d center = Eigen::Vector3d(pos.x, pos.y, pos.z);
 		Eigen::Vector3d diff = p - center;
-		dist = diff.norm() - m_radius - 0.2;
+		dist = diff.norm() - m_radius - 0.3;
 		if (dist < 0) {
 			contactNormal = diff.normalized();
 			return true;

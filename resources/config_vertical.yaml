@@ -1,0 +1,64 @@
+screen_width:
+  type: "int"
+  value: 1280
+screen_height:
+  type: "int"
+  value: 720
+target_fps:
+  type: "int"
+  value: 30
+
+cam_pos_x:
+  type: "float"
+  value: 0.0
+cam_pos_y:
+  type: "float"
+  value: 50.0
+cam_pos_z:
+  type: "float"
+  value: 90.0
+
+cam_dir_x:
+  type: "float"
+  value: 0.0
+cam_dir_y:
+  type: "float"
+  value: 0.0
+cam_dir_z:
+  type: "float"
+  value: 0.0
+
+cam_fov:
+  type: "float"
+  value: 90.0
+
+elastic_stiffness:
+  type: "double"
+  value: 100
+bending_stiffness:
+  type: "double"
+  value: 50
+attachment_stiffness:
+  type: "double"
+  value: 120
+
+dampening_coeff:
+  type: "double"
+  value: 0.01
+
+wind_direction_x:
+  type: "double"
+  value: 0.0
+wind_direction_y:
+  type: "double"
+  value: 0.0
+wind_direction_z:
+  type: "double"
+  value: 0.0
+wind_intensity:
+  type: "double"
+  value: 0.0000
+
+scene_path:
+  type: "string"
+  value: "resources/vertical.yaml"
