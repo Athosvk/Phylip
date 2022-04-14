@@ -91,9 +91,8 @@ namespace phyl{
 		GuiLabel(lastElement, "Wind Strength");
 		lastElement.x += LabelSpacing;
 		clothSimulator.setWindIntensity(GuiSlider(lastElement, "0% ",
-			" 100%", clothSimulator.getWindIntensity(), 0., 0.0008));
+			" 100%", clothSimulator.getWindIntensity(), 0., 0.06));
 		lastElement.y += 20;
-		GuiLabel(lastElement, TextFormat("%.2f", clothSimulator.getWindIntensity()));
 
 		Eigen::Vector3d dir = clothSimulator.getWindDirection();
 		int tot=0;

@@ -56,3 +56,14 @@ add_executable( ${PROJECT_NAME} ${SRC})
 target_link_libraries( ${PROJECT_NAME} ${LIBS} ${CUSTOM_LIBS})
 target_compile_options( ${PROJECT_NAME} PRIVATE ${CXX_OPTIONS})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
+
+if( UNIX )
+    add_custom_command(
+        TARGET ${PROJECT_NAME}
+        POST_BUILD COMMAND ${CMAKE_COMMAND} -E
+        create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/resources ${CMAKE_BINARY_DIR}/resources)
+else()
+    file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/resources" _dstDir)
+    file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/resources" _srcDir)
+    execute_process(COMMAND cmd.exe /c mklink /J "${_dstDir}" "${_srcDir}")
+endif()

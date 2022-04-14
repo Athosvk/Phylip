@@ -58,7 +58,6 @@ namespace phyl {
 	}
 
 	Scene::~Scene(){
-		UnloadShader(m_shader);
 	}
 
 	const Camera& Scene::getCamera() const {

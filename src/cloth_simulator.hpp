@@ -25,7 +25,7 @@ public:
 	void setDampening(double coefficient);
 	void setGravity(double coefficient);
 	void setWindIntensity(double strength);
-	void setWindDirection(Eigen::Vector3d &dir) {m_windDirection = dir;}
+	void setWindDirection(Eigen::Vector3d &dir) {m_windDirection = dir;m_windDirection.normalize();}
 
 	double getElasticStiffness() const;
 	double getBendingStiffness() const;
