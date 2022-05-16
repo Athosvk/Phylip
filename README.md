@@ -2,7 +2,7 @@
 Cloth simulation using [Fast Simulation of Mass Spring System](https://www.cs.utah.edu/~ladislav/liu13fast/liu13fast.html) by Liu et Al.
 
 ### Wind on the +Y axis, falling and wrapping on a sphere
-![](https://media.giphy.com/media/0Nx6Ea6XJ8PzfODchu/giphy.gif)
+![](https://media.giphy.com/media/0Nx6Ea6XJ8PzfODchu/giphy.gif) ![](https://media.giphy.com/media/yu3J8kNGY0Icyfs9sA/giphy.gif)
 
 ### Shooting spheres at hanging cloth and showing the effect of some options
 ![](https://media.giphy.com/media/ZK7LztV355DsubZDyO/giphy.gif)
