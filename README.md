@@ -34,7 +34,9 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j8
 ```
 
-# Run Instructions
+# Run Instructions  
 
+```
 ./Phylip resources/config_flat.yaml
 ./Phylip resources/config_vertical.yaml
+```
